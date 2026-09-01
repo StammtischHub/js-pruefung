@@ -1,0 +1,16 @@
+{
+  "name": "js-pruefung",
+  "version": "1.0.0",
+  "description": "Pruefungsleistung fuer das JS-Modul",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Simon Budzus, Jannis Dickel, Max Gloeckner, Leon Huttarsch, Julian Benedikt Kirchner, Leon Reusch",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.22.0",
+      "onFail": "download"
+    }
+  },
+  "type": "module"
+}

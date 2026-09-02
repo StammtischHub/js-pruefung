@@ -8,8 +8,7 @@ const projectRoot = path.resolve(__dirname, "../../../");
 export const config = {
   port: process.env.PORT || 4000,
 
-  classificationServiceUrl:
-    process.env.CLASSIFICATION_SERVICE_URL || "http://localhost:5000",
+  classificationServiceUrl: process.env.CLASSIFICATION_SERVICE_URL || "http://localhost:5000",
 
   paths: {
     scanner: path.join(projectRoot, "data", "scanner"),

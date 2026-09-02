@@ -35,6 +35,7 @@ export const config = {
 
   source: {
     auto: "AUTO",
+    corrected: "CORRECTED",
     manual: "MANUAL",
   },
 };

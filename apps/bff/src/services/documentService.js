@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { moveToInbox } from "../storage/fileStore.js";
-import { saveMetadata } from "../storage/metadataStore.js";
+import {getAllMetadata, saveMetadata} from "../storage/metadataStore.js";
 import { config } from "../config.js";
 
 export async function handleManualUpload(file) {
@@ -18,4 +18,25 @@ export async function handleManualUpload(file) {
 
   await saveMetadata(document);
   return document;
+}
+
+export async function editMetadata(id, updatedFields) {
+  const metadataFile = await getAllMetadata();
+  const index = metadataFile.findIndex((entry) => entry.id === id);
+
+  if (index === -1) { return null; }
+
+  const metadata = metadataFile[index];
+
+  const updatedMetadata = {
+    ...metadata,
+    ...updatedFields,
+    id: metadata.id,
+    source: config.source.manual,
+  }
+
+  metadataFile[index] = updatedMetadata;
+  await saveMetadata(metadataFile);
+
+  return updatedMetadata;
 }

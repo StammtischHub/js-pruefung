@@ -1,6 +1,6 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
-import { handleManualUpload } from "../services/documentService.js";
+import {editMetadata, handleManualUpload} from "../services/documentService.js";
 
 const router = express.Router();
 
@@ -29,6 +29,22 @@ router.post("/upload", (req, res) => {
       return res.status(500).json({ error: "Processing failed." });
     }
   });
+});
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedFields = req.body;
+
+    const document = await editMetadata(id, updatedFields);
+
+    if (!document) {
+      return res.status(404).json({ error: "Document not found." });
+    }
+    return res.status(200).json(document);
+  } catch (err) {
+    return res.status(500).json({ error: "Error updating metadata." });
+  }
 });
 
 export default router;

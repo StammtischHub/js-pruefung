@@ -2,12 +2,18 @@
   "name": "js-pruefung",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "Pruefungsleistung fuer das JS-Modul",
   "main": "index.js",
   "scripts": {
     "dev:bff": "pnpm --filter bff dev",
     "dev:frontend": "pnpm --filter frontend dev",
-    "dev": "concurrently -n BFF,FRONTEND -c blue,green \"pnpm dev:bff\" \"pnpm dev:frontend\""
+    "dev": "concurrently -n BFF,FRONTEND -c blue,green \"pnpm dev:bff\" \"pnpm dev:frontend\"",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:structure": "node scripts/check-structure.js",
+    "verify": "pnpm lint && pnpm format:check && pnpm check:structure"
   },
   "keywords": [],
   "author": "Simon Budzus, Jannis Dickel, Max Gloeckner, Leon Huttarsch, Julian Benedikt Kirchner, Leon Reusch",
@@ -20,6 +26,11 @@
   },
   "type": "module",
   "devDependencies": {
-    "concurrently": "^9.2.4"
+    "concurrently": "^9.2.4",
+    "eslint": "^9.13.0",
+    "@eslint/js": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.11.0",
+    "prettier": "^3.3.3"
   }
 }

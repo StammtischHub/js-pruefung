@@ -18,7 +18,102 @@
     </header>
 
     <main id="app">
-      <!-- Hier rendert main.js die jeweils aktive View hinein -->
+      <!--Inbox-->
+      <section id="inbox-view" class="view">
+        <h2>Inbox</h2>
+
+        <table id="inbox-table">
+          <thead>
+            <tr>
+              <th>Dateiname</th>
+              <th>Status</th>
+              <th>Kategorie</th>
+              <th>Confidence</th>
+              <th>Klassifizierungssart</th>
+            </tr>
+          </thead>
+
+          <tbody id="inbox-list"></tbody>
+        </table>
+
+        <p id="inbox-empty" hidden>Keine Dokumente in der Inbox.</p>
+      </section>
+
+      <!--zu Pruefen-->
+      <section id="review-view" class="view" hidden>
+        <h2>Zu prüfen</h2>
+        <p>Noch nicht implementiert.</p>
+      </section>
+
+      <!--Warteposition-->
+      <section id="waiting-view" class="view" hidden>
+        <h2>Warteposition</h2>
+        <p>Noch nicht implementiert.</p>
+      </section>
+
+      <!--Papierkorb-->
+      <section id="trash-view" class="view" hidden>
+        <h2>Papierkorb</h2>
+        <p>Noch nicht implementiert.</p>
+      </section>
+
+      <!--Dokumentdetails-->
+      <section id="detail-view" class="view" hidden>
+        <h2>Dokumendtetails</h2>
+
+        <p>
+          <strong>ID:</strong>
+          <span id="detail-id"></span>
+        </p>
+
+        <p>
+          <strong>Dateiname:</strong>
+          <span id="detail-filename"></span>
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          <span id="detail-status"></span>
+        </p>
+
+        <p>
+          <strong>Kategorie:</strong>
+          <span id="detail-category"></span>
+        </p>
+
+        <p>
+          <strong>Confidence:</strong>
+          <span id="detail-confidence"></span>
+        </p>
+
+        <p>
+          <strong>Klassifizierungsart:</strong>
+          <span id="detail-classification-type"></span>
+        </p>
+
+        <hr />
+
+        <h3>Metadaten</h3>
+
+        <p>
+          <strong>Dokumemnt-ID:</strong>
+          <span id="detail-doc-id"></span>
+          (<span id="detail-doc-id-score"></span>)
+        </p>
+
+        <p>
+          <strong>Dokumentdatum:</strong>
+          <span id="detail-doc-date"></span>
+          (<span id="detail-doc-date-score"></span>)
+        </p>
+
+        <p>
+          <strong>Betreff:</strong>
+          <span id="detail-doc-subject"></span>
+          (<span id="detail-doc-subject-score"></span>)
+        </p>
+        <button id="back-to-inbox">Zurück zur Inbox</button>
+      </section>
     </main>
 
     <script type="module" src="src/main.js"></script>

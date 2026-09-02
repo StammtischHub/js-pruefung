@@ -29,6 +29,8 @@ Im Projekt-Root:
 
 ```sh
 docker compose up --build
+# oder
+pnpm dev:docker
 ```
 
 ### Lokal
@@ -43,7 +45,7 @@ Es gibt zwei Teile, die unabhängig voneinander laufen:
 
 > [!IMPORTANT]
 > Das BFF muss laufen, damit das Frontend Daten anzeigen kann. Ohne laufenden BFF meldet die Konsole lediglich, dass das Backend nicht erreichbar ist.
-> 
+>
 > Zusätzlich müssen die Mock-Services lokal laufen, sodass das BFF PDFs erhält und diese kategorisieren kann.
 
 ## Konfiguration

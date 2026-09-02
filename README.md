@@ -24,7 +24,7 @@ Das installiert die Abhängigkeiten für den Workspace-Root sowie für alle Pake
 Es gibt zwei Teile, die unabhängig voneinander laufen:
 
 | Befehl              | Was wird gestartet                                    | Port          | Aufrufbar unter       |
-| ------------------- | ----------------------------------------------------- | ------------- | --------------------- |
+|---------------------|-------------------------------------------------------|---------------|-----------------------|
 | `pnpm dev:bff`      | Backend-for-Frontend (Express-Server)                 | 4000          | http://localhost:4000 |
 | `pnpm dev:frontend` | statischer Webserver für das Frontend (`http-server`) | 5173          | http://localhost:5173 |
 | `pnpm dev`          | beide gleichzeitig                                    | 4000 und 5173 | siehe oben            |
@@ -37,14 +37,20 @@ Das BFF stellt seine REST-API unter `http://localhost:4000/api` bereit. Das Fron
 
 ### Docker
 
-TODO!
+Die Anwendung kann inklusive der benötigten Mock-Services vollständig über Docker Compose gestartet werden.
+
+Im Projekt-Root:
+
+```sh
+docker compose up --build
+```
 
 ## Konfiguration
 
 Der BFF liest zwei Umgebungsvariablen (siehe `apps/bff/src/config.js`):
 
 | Variable                     | Standardwert            | Bedeutung                                               |
-| ---------------------------- | ----------------------- | ------------------------------------------------------- |
+|------------------------------|-------------------------|---------------------------------------------------------|
 | `PORT`                       | `4000`                  | Port, auf dem der BFF-Server läuft                      |
 | `CLASSIFICATION_SERVICE_URL` | `http://localhost:5000` | Basis-URL des externen Klassifizierungs-Dienstes (Mock) |
 

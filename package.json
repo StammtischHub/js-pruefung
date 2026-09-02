@@ -1,16 +1,25 @@
 {
   "name": "js-pruefung",
+  "private": true,
   "version": "1.0.0",
   "description": "Pruefungsleistung fuer das JS-Modul",
   "main": "index.js",
+  "scripts": {
+    "dev:bff": "pnpm --filter bff dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev": "concurrently -n BFF,FRONTEND -c blue,green \"pnpm dev:bff\" \"pnpm dev:frontend\""
+  },
   "keywords": [],
   "author": "Simon Budzus, Jannis Dickel, Max Gloeckner, Leon Huttarsch, Julian Benedikt Kirchner, Leon Reusch",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^11.22.0",
+      "version": "^11.25.0",
       "onFail": "download"
     }
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "concurrently": "^9.2.4"
+  }
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intelligenter Posteingang</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Intelligenter Posteingang</h1>
+    <nav id="main-nav">
+      <button data-view="inbox">Inbox</button>
+      <button data-view="review">Zu pruefen</button>
+      <button data-view="waiting">Warteposition</button>
+      <button data-view="trash">Papierkorb</button>
+    </nav>
+  </header>
+
+  <main id="app">
+    <!-- Hier rendert main.js die jeweils aktive View hinein -->
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

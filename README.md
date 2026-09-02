@@ -19,6 +19,18 @@ Das installiert die Abhängigkeiten für den Workspace-Root sowie für alle Pake
 
 ## Anwendung starten
 
+Das BFF stellt seine REST-API unter `http://localhost:4000/api` bereit. Das Frontend läuft unter `http://localhost:5173`.
+
+### Docker (Empfohlen)
+
+Die Anwendung kann inklusive der benötigten Mock-Services vollständig über Docker Compose gestartet werden.
+
+Im Projekt-Root:
+
+```sh
+docker compose up --build
+```
+
 ### Lokal
 
 Es gibt zwei Teile, die unabhängig voneinander laufen:
@@ -29,21 +41,10 @@ Es gibt zwei Teile, die unabhängig voneinander laufen:
 | `pnpm dev:frontend` | statischer Webserver für das Frontend (`http-server`) | 5173          | http://localhost:5173 |
 | `pnpm dev`          | beide gleichzeitig                                    | 4000 und 5173 | siehe oben            |
 
-`pnpm dev` startet beide Prozesse parallel über `concurrently`.
-
-Das BFF stellt seine REST-API unter `http://localhost:4000/api` bereit. Das Frontend läuft unter `http://localhost:5173`.
-
-**Wichtig**: Das BFF muss laufen, damit das Frontend Daten anzeigen kann. Ohne laufenden BFF meldet die Konsole lediglich, dass das Backend nicht erreichbar ist.
-
-### Docker
-
-Die Anwendung kann inklusive der benötigten Mock-Services vollständig über Docker Compose gestartet werden.
-
-Im Projekt-Root:
-
-```sh
-docker compose up --build
-```
+> [!IMPORTANT]
+> Das BFF muss laufen, damit das Frontend Daten anzeigen kann. Ohne laufenden BFF meldet die Konsole lediglich, dass das Backend nicht erreichbar ist.
+> 
+> Zusätzlich müssen die Mock-Services lokal laufen, sodass das BFF PDFs erhält und diese kategorisieren kann.
 
 ## Konfiguration
 
@@ -61,6 +62,16 @@ PORT=4500 pnpm dev:bff
 ```
 
 ## Linting und Formatierung
+
+> [!TIP]
+> Führe immer folgende Befehle aus, bevor ein Commit gemacht wird:
+>
+> ```sh
+> pnpm format
+> pnpm lint
+> ```
+>
+> Damit ist sichergestellt, dass sowohl die Formatierung als auch die Lint-Regeln passen.
 
 ### ESLint
 
@@ -83,15 +94,6 @@ Prettier kümmert sich ausschließlich um die Formatierung (Einrückung, Anführ
 pnpm format        # formatiert alle Dateien automatisch
 pnpm format:check  # prüft nur, ob alles korrekt formatiert ist, ohne etwas zu ändern
 ```
-
-### Empfohlener Ablauf vor einem Commit
-
-```sh
-pnpm format
-pnpm lint
-```
-
-Damit ist sichergestellt, dass sowohl die Formatierung als auch die Lint-Regeln passen, bevor gepusht wird, und die CI-Pipeline nicht wegen vermeidbarer Fehler fehlschlägt.
 
 ## _Data_-Ordner
 

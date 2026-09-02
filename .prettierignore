@@ -1,0 +1,6 @@
+node_modules
+pnpm-lock.yaml
+data/
+*.min.js
+docs/**/*.pdf
+.idea/

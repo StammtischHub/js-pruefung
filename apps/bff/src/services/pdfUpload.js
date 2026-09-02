@@ -8,7 +8,7 @@ const upload = multer({
   }),
   limits: { fileSize: config.fileSizeUploadLimit },
 
-  fileFilter: (req, file, callback) => {
+  fileFilter: (req, file, cb) => {
     const isPdf =
       file.mimetype === "application/pdf" &&
       path.extname(file.originalname).toLowerCase() === ".pdf";
@@ -16,9 +16,9 @@ const upload = multer({
     if (!isPdf) {
       const err = new Error("Invalid file type");
       err.code = "INVALID_FILE_TYPE";
-      return callback(err);
+      return cb(err);
     }
-    callback(null, true);
+    cb(null, true);
   },
 });
 

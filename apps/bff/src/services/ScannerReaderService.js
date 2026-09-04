@@ -38,10 +38,10 @@ export default class ScannerReaderService {
 
         await onPdf(file, filename.substring(0, filename.length - 4));
       } catch (error) {
-        console.log(`Fehler beim Verarbeiten von ${filename}`, error);
+        console.log(`Error processing ${filename}`, error);
       }
     });
-    console.log("Observer gestartet");
+    console.log("Observer started");
   }
 
   async waitForFile(filePath, retries = 10) {
@@ -59,13 +59,13 @@ export default class ScannerReaderService {
           return;
         }
       } catch (error) {
-        console.error(`Fehler beim Warten auf Datei ${filePath}:`, error);
+        console.error(`Error waiting for file ${filePath}:`, error);
       }
 
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    throw new Error(`Datei wurde nicht rechtzeitig verfügbar: ${filePath}`);
+    throw new Error(`File was not made available in time: ${filePath}`);
   }
 
   stopObserver() {

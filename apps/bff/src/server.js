@@ -26,7 +26,7 @@ app.use("/api/documents", documentsRouter);
 ensureFolders();
 
 app.listen(config.port, () => {
-  console.log(`BFF laeuft auf http://localhost:${config.port}`);
+  console.log(`BFF running on http://localhost:${config.port}`);
 });
 
 readerService.startObserver(async (file, id) => {

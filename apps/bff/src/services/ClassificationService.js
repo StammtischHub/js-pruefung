@@ -7,7 +7,7 @@ export default class ClassificationService {
 
   async classifyFile(file, id) {
     if (!(file instanceof File) && !(file instanceof Blob)) {
-      throw new Error("Es muss eine PDF Datei übergeben werden!");
+      throw new Error("A PDF file must be passed");
     }
 
     const url = this.apiUrl + id;
@@ -22,12 +22,12 @@ export default class ClassificationService {
       });
 
       if (!response.ok) {
-        throw new Error(`API-Fehler: ${response.status} ${response.statusText}`);
+        throw new Error(`API-Error: ${response.status} ${response.statusText}`);
       }
 
       return await response.json();
     } catch (error) {
-      console.log("Fehler beim senden der PDF Datei", error);
+      console.log("Error sending PDF file", error);
       throw error;
     }
   }
@@ -40,7 +40,7 @@ export default class ClassificationService {
         await fsPromises.rename(file.name, `../../data/inbox/${id}.pdf`);
       }
     } catch (error) {
-      console.log("Fehler beim verschieben der PDF Datei", error);
+      console.log("Fehler routing PDF file", error);
       throw error;
     }
   }

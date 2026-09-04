@@ -13,7 +13,6 @@ export const config = {
   paths: {
     scanner: path.join(projectRoot, "data", "scanner"),
     inbox: path.join(projectRoot, "data", "inbox"),
-    needsReview: path.join(projectRoot, "data", "needs_review"),
     waiting: path.join(projectRoot, "data", "waiting"),
     processing: path.join(projectRoot, "data", "processing"),
     trash: path.join(projectRoot, "data", "trash"),
@@ -22,4 +21,19 @@ export const config = {
   metadataFile: path.join(projectRoot, "data", "metadata.json"),
 
   deletionRetentionDays: 30,
+
+  fileSizeUploadLimit: 20 * 1024 * 1024, // 20MB
+
+  states: {
+    inbox: "INBOX",
+    scanner: "SCANNER",
+    processing: "PROCESSING",
+    waiting: "WAITING",
+    trash: "TRASH",
+  },
+
+  source: {
+    auto: "AUTO",
+    manual: "MANUAL",
+  },
 };

@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import fs from "node:fs";
 import { config } from "./config.js";
+import healthRouter from "./routes/health.js";
+import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
 import ClassificationService from "./services/ClassificationService.js";
 
@@ -18,9 +20,8 @@ function ensureFolders() {
   });
 }
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" });
-});
+app.use("/api/health", healthRouter);
+app.use("/api/documents", documentsRouter);
 
 ensureFolders();
 

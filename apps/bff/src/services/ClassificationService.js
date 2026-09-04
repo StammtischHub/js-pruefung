@@ -46,7 +46,7 @@ export default class ClassificationService {
   }
 
   async #isConfidenceSufficient(assessment) {
-    for (const [key, value] of Object.entries(assessment.result)) {
+    for (const value of Object.values(assessment.result)) {
       if (!value.score) {
         continue;
       }

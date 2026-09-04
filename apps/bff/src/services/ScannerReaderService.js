@@ -26,7 +26,7 @@ export default class ScannerReaderService {
 
       try {
         await fsPromises.access(filePath, fsPromises.constants.F_OK);
-      } catch (err) {
+      } catch {
         return;
       }
 

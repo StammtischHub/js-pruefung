@@ -2,12 +2,12 @@ import express from "express";
 import cors from "cors";
 import fs from "node:fs";
 import { config } from "./config.js";
-import InboxReaderService from "./services/InboxReaderService.js"
+import ScannerReaderService from "./services/ScannerReaderService.js";
+import ClassificationService from "./services/ClassificationService.js";
 
 const app = express();
-const readerService = new InboxReaderService(
-  "/Users/simon/WebstormProjects/js-pruefung/data/inbox"
-);
+const readerService = new ScannerReaderService("../../data/scanner");
+const classificationService = new ClassificationService("http://localhost:8080/api/v1/classify/");
 
 app.use(cors());
 app.use(express.json());
@@ -28,6 +28,8 @@ app.listen(config.port, () => {
   console.log(`BFF laeuft auf http://localhost:${config.port}`);
 });
 
-readerService.startObserver(async ({ filename, filePath, data }) => {
-  console.log(`Neue PDF-Datei gefunden: ${filename}`);
+readerService.startObserver(async (file, id) => {
+  classificationService
+    .classifyFile(file, id)
+    .then((assessment) => classificationService.routeFileByConfidence(file, id, assessment));
 });

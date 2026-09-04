@@ -1,8 +1,8 @@
-import fs from "node:fs"
+import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
 
-export default class InboxReaderService {
+export default class ScannerReaderService {
   constructor(directory) {
     this.directory = directory;
     this.watcher = null;
@@ -25,15 +25,18 @@ export default class InboxReaderService {
       const filePath = path.join(this.directory, filename);
 
       try {
+        await fsPromises.access(filePath, fsPromises.constants.F_OK);
+      } catch (err) {
+        return;
+      }
+
+      try {
         await this.waitForFile(filePath);
 
         const pdfBuffer = await fsPromises.readFile(filePath);
+        const file = new File([pdfBuffer], filePath, { type: "application/pdf" });
 
-        await onPdf({
-          filename,
-          filePath,
-          data: pdfBuffer,
-        });
+        await onPdf(file, filename.substring(0, filename.length - 4));
       } catch (error) {
         console.log(`Fehler beim Verarbeiten von ${filename}`, error);
       }

@@ -40,7 +40,7 @@ export default class ClassificationService {
         await fsPromises.rename(file.name, `../../data/inbox/${id}.pdf`);
       }
     } catch (error) {
-      console.log("Fehler routing PDF file", error);
+      console.log("Error routing PDF file", error);
       throw error;
     }
   }

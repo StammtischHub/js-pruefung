@@ -1,0 +1,34 @@
+services:
+  scanner-mock:
+    image: ghcr.io/thst71/pdfclassifier-api-mock-scanner-mock:v1_1_0
+    pull_policy: always
+    restart: unless-stopped
+
+  pdfclassifier-api-mock:
+    image: ghcr.io/thst71/pdfclassifier-api-mock:v1_1_0
+    pull_policy: always
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/bff/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - scanner-mock
+      - pdfclassifier-api-mock
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

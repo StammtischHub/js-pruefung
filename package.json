@@ -9,6 +9,7 @@
     "dev:bff": "pnpm --filter bff dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev": "concurrently -n BFF,FRONTEND -c blue,green \"pnpm dev:bff\" \"pnpm dev:frontend\"",
+    "dev:docker": "docker compose up --build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -19,11 +20,10 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^11.25.0",
+      "version": "11.25.0",
       "onFail": "download"
     }
   },
-  "type": "module",
   "devDependencies": {
     "concurrently": "^9.2.4",
     "eslint": "^9.13.0",

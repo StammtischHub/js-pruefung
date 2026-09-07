@@ -14,10 +14,7 @@ navButtons.forEach((button) => {
 
 function renderView(viewName) {
   navButtons.forEach((button) => {
-    button.classList.toggle(
-      "active",
-      button.dataset.view === viewName,
-    );
+    button.classList.toggle("active", button.dataset.view === viewName);
   });
 
   switch (viewName) {

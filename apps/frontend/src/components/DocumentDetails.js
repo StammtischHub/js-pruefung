@@ -61,7 +61,5 @@ export function renderDocumentDetails(app, doc, onBack) {
     </section>
   `;
 
-  document
-    .getElementById("back-to-inbox")
-    .addEventListener("click", onBack);
+  document.getElementById("back-to-inbox").addEventListener("click", onBack);
 }

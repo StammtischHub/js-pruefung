@@ -14,7 +14,7 @@ export const config = {
     scanner: path.join(projectRoot, "data", "scanner"),
     inbox: path.join(projectRoot, "data", "inbox"),
     waiting: path.join(projectRoot, "data", "waiting"),
-    processing: path.join(projectRoot, "data", "processing"),
+    processing: path.join(projectRoot, "data", "processed"),
     trash: path.join(projectRoot, "data", "trash"),
   },
 

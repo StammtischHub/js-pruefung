@@ -103,7 +103,6 @@ Der Ordner `data/` bildet die Zustände ab, die ein Dokument im System durchläu
 
 - `scanner` – Eingang der (simulierten) Scanner-Straße
 - `inbox` – neue, noch nicht klassifizierte bzw. gesichtete Dokumente
-- `needs_review` – Dokumente, deren automatische Klassifizierung eine manuelle Prüfung erfordert
 - `waiting` – Dokumente in Warteposition, z.B. bei offenen Rückfragen
-- `processing` – fertig klassifizierte Dokumente, Übergabe an die Fachbereiche
+- `processed` – fertig klassifizierte Dokumente, Übergabe an die Fachbereiche
 - `trash` – zur Löschung vorgesehene Dokumente

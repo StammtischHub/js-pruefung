@@ -9,6 +9,7 @@
     "dev:bff": "pnpm --filter bff dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev": "concurrently -n BFF,FRONTEND -c blue,green \"pnpm dev:bff\" \"pnpm dev:frontend\"",
+    "dev:docker": "docker compose up --build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

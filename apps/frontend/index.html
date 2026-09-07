@@ -1,121 +1,28 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Intelligenter Posteingang</title>
-    <link rel="stylesheet" href="src/styles/main.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Intelligenter Posteingang</h1>
-      <nav id="main-nav">
-        <button data-view="inbox">Inbox</button>
-        <button data-view="review">Zu pruefen</button>
-        <button data-view="waiting">Warteposition</button>
-        <button data-view="trash">Papierkorb</button>
-      </nav>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <main id="app">
-      <!--Inbox-->
-      <section id="inbox-view" class="view">
-        <h2>Inbox</h2>
+  <title>Intelligenter Posteingang</title>
 
-        <table id="inbox-table">
-          <thead>
-            <tr>
-              <th>Dateiname</th>
-              <th>Status</th>
-              <th>Kategorie</th>
-              <th>Confidence</th>
-              <th>Klassifizierungssart</th>
-            </tr>
-          </thead>
+  <link rel="stylesheet" href="./src/styles/main.css" />
+</head>
 
-          <tbody id="inbox-list"></tbody>
-        </table>
+<body>
+<header>
+  <h1>Intelligenter Posteingang</h1>
 
-        <p id="inbox-empty" hidden>Keine Dokumente in der Inbox.</p>
-      </section>
+  <nav id="main-nav">
+    <button type="button" data-view="inbox">Inbox</button>
+    <button type="button" data-view="review">Zu prüfen</button>
+    <button type="button" data-view="waiting">Warteposition</button>
+    <button type="button" data-view="trash">Papierkorb</button>
+  </nav>
+</header>
 
-      <!--zu Pruefen-->
-      <section id="review-view" class="view" hidden>
-        <h2>Zu prüfen</h2>
-        <p>Noch nicht implementiert.</p>
-      </section>
+<main id="app"></main>
 
-      <!--Warteposition-->
-      <section id="waiting-view" class="view" hidden>
-        <h2>Warteposition</h2>
-        <p>Noch nicht implementiert.</p>
-      </section>
-
-      <!--Papierkorb-->
-      <section id="trash-view" class="view" hidden>
-        <h2>Papierkorb</h2>
-        <p>Noch nicht implementiert.</p>
-      </section>
-
-      <!--Dokumentdetails-->
-      <section id="detail-view" class="view" hidden>
-        <h2>Dokumendtetails</h2>
-
-        <p>
-          <strong>ID:</strong>
-          <span id="detail-id"></span>
-        </p>
-
-        <p>
-          <strong>Dateiname:</strong>
-          <span id="detail-filename"></span>
-        </p>
-
-        <p>
-          <strong>Status:</strong>
-          <span id="detail-status"></span>
-        </p>
-
-        <p>
-          <strong>Kategorie:</strong>
-          <span id="detail-category"></span>
-        </p>
-
-        <p>
-          <strong>Confidence:</strong>
-          <span id="detail-confidence"></span>
-        </p>
-
-        <p>
-          <strong>Klassifizierungsart:</strong>
-          <span id="detail-classification-type"></span>
-        </p>
-
-        <hr />
-
-        <h3>Metadaten</h3>
-
-        <p>
-          <strong>Dokumemnt-ID:</strong>
-          <span id="detail-doc-id"></span>
-          (<span id="detail-doc-id-score"></span>)
-        </p>
-
-        <p>
-          <strong>Dokumentdatum:</strong>
-          <span id="detail-doc-date"></span>
-          (<span id="detail-doc-date-score"></span>)
-        </p>
-
-        <p>
-          <strong>Betreff:</strong>
-          <span id="detail-doc-subject"></span>
-          (<span id="detail-doc-subject-score"></span>)
-        </p>
-        <button id="back-to-inbox">Zurück zur Inbox</button>
-      </section>
-    </main>
-
-    <script type="module" src="src/main.js"></script>
-  </body>
+<script type="module" src="./src/main.js"></script>
+</body>
 </html>

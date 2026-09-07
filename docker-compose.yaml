@@ -4,7 +4,7 @@ services:
     pull_policy: always
     restart: unless-stopped
     volumes:
-      - ./data/inbox:/inbox
+      - ./data/scanner:/inbox
 
   pdfclassifier-api-mock:
     image: ghcr.io/thst71/pdfclassifier-api-mock:v1_1_0

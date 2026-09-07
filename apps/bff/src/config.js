@@ -13,7 +13,6 @@ export const config = {
   paths: {
     scanner: path.join(projectRoot, "data", "scanner"),
     inbox: path.join(projectRoot, "data", "inbox"),
-    needsReview: path.join(projectRoot, "data", "needs_review"),
     waiting: path.join(projectRoot, "data", "waiting"),
     processing: path.join(projectRoot, "data", "processing"),
     trash: path.join(projectRoot, "data", "trash"),
@@ -27,7 +26,7 @@ export const config = {
 
   states: {
     inbox: "INBOX",
-    needsReview: "NEEDS_REVIEW",
+    scanner: "SCANNER",
     processing: "PROCESSING",
     waiting: "WAITING",
     trash: "TRASH",

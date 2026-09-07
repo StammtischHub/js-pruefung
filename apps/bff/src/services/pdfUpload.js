@@ -4,7 +4,7 @@ import { config } from "../config.js";
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, config.paths.waiting),
+    destination: (req, file, cb) => cb(null, config.paths.scanner),
   }),
   limits: { fileSize: config.fileSizeUploadLimit },
 

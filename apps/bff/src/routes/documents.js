@@ -4,7 +4,7 @@ import { handleManualUpload } from "../services/documentService.js";
 
 const router = express.Router();
 
-router.post("/upload", (req, res) => {
+router.post("/", (req, res) => {
   pdfUpload(req, res, async (err) => {
     if (err) {
       const errors = {

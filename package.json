@@ -13,7 +13,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "clean:data": "node scripts/clearData.js",
+    "clean:data:dry": "node scripts/clearData.js --dry-run"
   },
   "keywords": [],
   "author": "Simon Budzus, Jannis Dickel, Max Gloeckner, Leon Huttarsch, Julian Benedikt Kirchner, Leon Reusch",

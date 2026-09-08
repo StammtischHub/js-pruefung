@@ -32,8 +32,9 @@ export const config = {
     trash: "TRASH",
   },
 
-  source: {
+  classificationType: {
     auto: "AUTO",
+    corrected: "CORRECTED",
     manual: "MANUAL",
   },
 };

@@ -34,7 +34,7 @@ export default class ClassificationService {
   }
 
   async routeFileByConfidence(file, id, assessment) {
-    try {
+     try {
       if (await this.#isConfidenceSufficient(assessment)) {
         await moveDocumentToState(file, id, config.states.processed);
       } else {

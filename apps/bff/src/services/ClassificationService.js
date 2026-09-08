@@ -1,6 +1,5 @@
-import fsPromises from "node:fs/promises";
 import { config } from "../config.js";
-import {moveDocumentToState} from "../storage/documentStore.js";
+import { moveDocumentToState } from "../storage/documentStore.js";
 
 export default class ClassificationService {
   constructor(apiUrl) {

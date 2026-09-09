@@ -19,7 +19,9 @@ Das installiert die Abhängigkeiten für den Workspace-Root sowie für alle Pake
 
 ## Anwendung starten
 
-Das BFF stellt seine REST-API unter `http://localhost:4000/api` bereit. Das Frontend läuft unter `http://localhost:5173`.
+Das _BFF_ stellt seine REST-API unter http://localhost:4000/api bereit.
+
+Das _Frontend_ läuft unter http://localhost:5173.
 
 ### Docker (Empfohlen)
 
@@ -33,13 +35,13 @@ docker compose up -d
 
 ### Lokal
 
-Es gibt zwei Teile, die unabhängig voneinander laufen:
+Es gibt zwei Teile, die unabhängig voneinander laufen müssen:
 
-| Befehl              | Was wird gestartet                                    | Port          | Aufrufbar unter       |
-| ------------------- | ----------------------------------------------------- | ------------- | --------------------- |
-| `pnpm dev:bff`      | Backend-for-Frontend (Express-Server)                 | 4000          | http://localhost:4000 |
-| `pnpm dev:frontend` | statischer Webserver für das Frontend (`http-server`) | 5173          | http://localhost:5173 |
-| `pnpm dev`          | beide gleichzeitig                                    | 4000 und 5173 | siehe oben            |
+| Befehl              | Was wird gestartet                                    |
+| ------------------- | ----------------------------------------------------- |
+| `pnpm dev:bff`      | Backend-for-Frontend (Express-Server)                 |
+| `pnpm dev:frontend` | Statischer Webserver für das Frontend (`http-server`) |
+| `pnpm dev`          | Beide gleichzeitig                                    |
 
 > [!IMPORTANT]
 > Das BFF muss laufen, damit das Frontend Daten anzeigen kann. Ohne laufenden BFF meldet die Konsole lediglich, dass das Backend nicht erreichbar ist.
@@ -57,10 +59,10 @@ Es gibt zwei Teile, die unabhängig voneinander laufen:
 
 Der BFF liest zwei Umgebungsvariablen (siehe `apps/bff/src/config.js`):
 
-| Variable                     | Standardwert            | Bedeutung                                               |
-| ---------------------------- | ----------------------- | ------------------------------------------------------- |
-| `PORT`                       | `4000`                  | Port, auf dem der BFF-Server läuft                      |
-| `CLASSIFICATION_SERVICE_URL` | `http://localhost:5000` | Basis-URL des externen Klassifizierungs-Dienstes (Mock) |
+| Variable                     | Standardwert                             | Bedeutung                                               |
+| ---------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| `PORT`                       | `4000`                                   | Port, auf dem der BFF-Server läuft                      |
+| `CLASSIFICATION_SERVICE_URL` | `http://localhost:8080/api/v1/classify/` | Basis-URL des externen Klassifizierungs-Dienstes (Mock) |
 
 Beide lassen sich beim Start überschreiben, zum Beispiel:
 
@@ -75,7 +77,7 @@ PORT=4500 pnpm dev:bff
 >
 > ```sh
 > pnpm format
-> pnpm lint
+> pnpm lint:fix
 > ```
 >
 > Damit ist sichergestellt, dass sowohl die Formatierung als auch die Lint-Regeln passen.
@@ -112,5 +114,14 @@ Der Ordner `data/` bildet die Zustände ab, die ein Dokument im System durchläu
 - `processed` – fertig klassifizierte Dokumente, Übergabe an die Fachbereiche
 - `trash` – zur Löschung vorgesehene Dokumente
 
+### Aufräumen des _Data_-Ordners
+
 Der _Data_-Ordner lässt sich mit dem beiliegenden `clearData.js`-Script bereinigen. Dieses setzt ebenfalls die `metadata.json` zurück.
-Ausführen lässt es sich einfach mit `pnpm clear:data` bzw `pnpm clear:data:dry`. Der dry-run ermöglicht eine preview der zu löschenden Dateien.
+
+Ausführen lässt es sich einfach mit folgenden Befehlen (der dry-run ermöglicht eine Preview der zu löschenden Dateien):
+
+```shell
+pnpm clear:data
+# bzw
+pnpm clear:data:dry
+```

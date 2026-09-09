@@ -1,5 +1,6 @@
 import { mockDocuments } from "../mocks/mockDocuments.js";
 import { renderDocumentDetails } from "../components/DocumentDetails.js";
+import { createConfidenceView } from "../components/ConfidenceView.js";
 
 async function getInboxDocuments() {
   return mockDocuments;

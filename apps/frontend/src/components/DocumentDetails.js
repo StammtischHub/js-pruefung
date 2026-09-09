@@ -1,3 +1,5 @@
+import { createConfidenceView } from "../components/ConfidenceView.js";
+
 export function renderDocumentDetails(app, doc, onBack) {
   app.innerHTML = `
     <section id="detail-view" class="view">

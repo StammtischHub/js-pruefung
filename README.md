@@ -111,3 +111,6 @@ Der Ordner `data/` bildet die Zustände ab, die ein Dokument im System durchläu
 - `waiting` – Dokumente in Warteposition, z.B. bei offenen Rückfragen
 - `processed` – fertig klassifizierte Dokumente, Übergabe an die Fachbereiche
 - `trash` – zur Löschung vorgesehene Dokumente
+
+Der _Data_-Ordner lässt sich mit dem beiliegenden `clearData.js`-Script bereinigen. Dieses setzt ebenfalls die `metadata.json` zurück.
+Ausführen lässt es sich einfach mit `pnpm clear:data` bzw `pnpm clear:data:dry`. Der dry-run ermöglicht eine preview der zu löschenden Dateien.

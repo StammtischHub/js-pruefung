@@ -13,10 +13,17 @@ async function readAll() {
   }
 }
 
-export async function saveMetadata(document) {
-  const all = await readAll();
-  all.push(document);
-  await fs.writeFile(config.metadataFile, JSON.stringify(all, null, 2));
+export async function addDocumentToMetadata(document) {
+  const allMetadata = await readAll();
+  allMetadata.push(document);
+  await fs.writeFile(config.metadataFile, JSON.stringify(allMetadata, null, 2));
+  return document;
+}
+
+export async function updateDocumentInMetadata(document) {
+  const allMetadataWithoutDocument = await readAll().filter(doc => doc.id !== document.id);
+  allMetadataWithoutDocument.push(document);
+  await fs.writeFile(config.metadataFile, JSON.stringify(allMetadataWithoutDocument, null, 2));
   return document;
 }
 

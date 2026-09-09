@@ -1,16 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { config } from "../config.js";
-import { saveMetadata } from "./metadataStore.js";
+import { addDocumentToMetadata } from "./metadataStore.js";
 
-export async function moveDocumentToState(
-  file,
-  id,
-  state,
-  classificationType = config.classificationType.auto
-) {
-  let statePath;
-
+function getPathByState(state, statePath) {
   switch (state) {
     case config.states.inbox:
       statePath = config.paths.inbox;
@@ -30,21 +23,19 @@ export async function moveDocumentToState(
     default:
       throw new Error(`Invalid state: ${state}`);
   }
-  const targetPath = path.join(statePath, `${id}.pdf`);
+  return statePath;
+}
 
-  const document = {
-    id,
-    originalName: null,
-    path: targetPath,
-    classificationType: classificationType,
-    state: state,
-    uploadedAt: new Date().toISOString(),
-  };
+export async function moveDocumentToState(
+  file,
+  id,
+  state
+) {
+  let statePath;
+  statePath = getPathByState(state, statePath);
+  const targetPath = path.join(statePath, `${id}.pdf`);
 
   const buffer = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(targetPath, buffer);
-
-  await saveMetadata(document);
-
   return targetPath;
 }

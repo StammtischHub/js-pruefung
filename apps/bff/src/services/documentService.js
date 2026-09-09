@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { moveDocumentToState } from "../storage/documentStore.js";
-import { saveMetadata } from "../storage/metadataStore.js";
+import { addDocumentToMetadata } from "../storage/metadataStore.js";
 import { config } from "../config.js";
 
 export async function handleManualUpload(file) {
@@ -16,6 +16,6 @@ export async function handleManualUpload(file) {
     uploadedAt: new Date().toISOString(),
   };
 
-  await saveMetadata(document);
+  await addDocumentToMetadata(document);
   return document;
 }

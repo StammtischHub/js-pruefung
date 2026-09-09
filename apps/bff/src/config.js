@@ -1,6 +1,5 @@
 import { findUp } from "find-up";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 const rootWorkspace = await findUp("pnpm-workspace.yaml");
 const projectRoot = path.dirname(rootWorkspace);

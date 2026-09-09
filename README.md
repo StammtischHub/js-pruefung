@@ -19,9 +19,9 @@ Das installiert die Abhängigkeiten für den Workspace-Root sowie für alle Pake
 
 ## Anwendung starten
 
-Das _BFF_ stellt seine REST-API unter http://localhost:4000/api bereit.
+Das **BFF** stellt seine REST-API unter http://localhost:4000/api bereit.
 
-Das _Frontend_ läuft unter http://localhost:5173.
+Das **Frontend** läuft unter http://localhost:5173.
 
 ### Docker (Empfohlen)
 

@@ -9,8 +9,9 @@
     "start": "node src/server.js"
   },
   "dependencies": {
-    "express": "^4.19.0",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "find-up": "^8.0.0",
     "multer": "^2.3.0",
     "uuid": "^14.0.2"
   }

@@ -24,6 +24,5 @@ export async function moveDocumentToState(file, id, state) {
       throw new Error(`Invalid state: ${state}`);
   }
   const targetPath = path.join(statePath, `${id}.pdf`);
-  await fs.rename(file.path, targetPath);
-  return targetPath;
+  return await fs.rename(file.path, targetPath);
 }

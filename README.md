@@ -28,9 +28,7 @@ Die Anwendung kann inklusive der benötigten Mock-Services vollständig über Do
 Im Projekt-Root:
 
 ```sh
-docker compose up --build
-# oder
-pnpm dev:docker
+docker compose up -d
 ```
 
 ### Lokal
@@ -45,8 +43,15 @@ Es gibt zwei Teile, die unabhängig voneinander laufen:
 
 > [!IMPORTANT]
 > Das BFF muss laufen, damit das Frontend Daten anzeigen kann. Ohne laufenden BFF meldet die Konsole lediglich, dass das Backend nicht erreichbar ist.
->
+
+> [!IMPORTANT]
 > Zusätzlich müssen die Mock-Services lokal laufen, sodass das BFF PDFs erhält und diese kategorisieren kann.
+>
+> Die Mock-Services müssen über Docker gestartet werden, indem man folgenden Befehl ausführt:
+>
+> ```shell
+> docker compose up -d scanner-mock pdfclassifier-api-mock
+> ```
 
 ## Konfiguration
 

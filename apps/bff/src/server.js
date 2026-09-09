@@ -8,8 +8,8 @@ import ScannerReaderService from "./services/ScannerReaderService.js";
 import ClassificationService from "./services/ClassificationService.js";
 
 const app = express();
-const readerService = new ScannerReaderService("../../data/scanner");
-const classificationService = new ClassificationService("http://localhost:8080/api/v1/classify/");
+const readerService = new ScannerReaderService(config.paths.scanner);
+const classificationService = new ClassificationService(config.classificationServiceUrl);
 
 app.use(cors());
 app.use(express.json());

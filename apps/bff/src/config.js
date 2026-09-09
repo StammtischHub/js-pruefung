@@ -1,9 +1,9 @@
+import { findUp } from "find-up";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const projectRoot = path.resolve(__dirname, "../../../");
+const rootWorkspace = await findUp("pnpm-workspace.yaml");
+const projectRoot = path.dirname(rootWorkspace);
 
 export const config = {
   port: process.env.PORT || 4000,

@@ -1,5 +1,4 @@
 import { rename, writeFile, readFile } from "node:fs/promises";
-import { config } from "../config.js";
 import { addDocumentToMetadata } from "./metadataStore.js";
 import { State } from "../objects/State.js";
 

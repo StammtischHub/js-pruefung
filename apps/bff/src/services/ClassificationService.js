@@ -1,4 +1,3 @@
-import { config } from "../config.js";
 import { changeDocumentState } from "../storage/documentStore.js";
 import { State } from "../objects/State.js";
 

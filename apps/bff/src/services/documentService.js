@@ -1,7 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { addNewDocument } from "../storage/documentStore.js";
 import { addDocumentToMetadata } from "../storage/metadataStore.js";
-import { config } from "../config.js";
 import { Document } from "../objects/Document.js";
 import { ClassificationType } from "../objects/ClassificationType.js";
 import { State } from "../objects/State.js";

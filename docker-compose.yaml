@@ -13,28 +13,29 @@ services:
     ports:
       - "8080:8080"
 
-#  backend:
-#    build:
-#      context: .
-#      dockerfile: apps/bff/Dockerfile
-#    restart: unless-stopped
-#    ports:
-#      - "4000:4000"
-#    depends_on:
-#      - scanner-mock
-#      - pdfclassifier-api-mock
-#    volumes:
-#      - ./data:/data
-#    environment:
-#      NODE_ENV: production
-#      PORT: 4000
-#
-#  frontend:
-#    build:
-#      context: .
-#      dockerfile: apps/frontend/Dockerfile
-#    restart: unless-stopped
-#    ports:
-#      - "5173:5173"
-#    depends_on:
-#      - backend
+  backend:
+    build:
+      context: .
+      dockerfile: apps/bff/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - scanner-mock
+      - pdfclassifier-api-mock
+    volumes:
+      - ./data:/app/data
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      CLASSIFICATION_SERVICE_URL: http://pdfclassifier-api-mock:8080/api/v1/classify/
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

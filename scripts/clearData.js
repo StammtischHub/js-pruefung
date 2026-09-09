@@ -1,12 +1,3 @@
-/**
- * Löscht den Inhalt aller Unterordner im "data"-Verzeichnis,
- * behält dabei aber die .gitkeep-Dateien.
- *
- * Aufruf:
- *   - node scripts/clearData.js
- *   - node scripts/clearData.js --dry-run   (zeigt nur an, was gelöscht würde)
- */
-
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

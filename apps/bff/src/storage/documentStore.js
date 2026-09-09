@@ -1,5 +1,5 @@
 import { rename, writeFile, readFile } from "node:fs/promises";
-import { addDocumentToMetadata } from "./metadataStore.js";
+import { config } from "../config.js";
 import { State } from "../objects/State.js";
 
 function getNewPathForState(filename, state) {

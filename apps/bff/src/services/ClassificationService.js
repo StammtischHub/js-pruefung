@@ -1,5 +1,5 @@
-import fsPromises from "node:fs/promises";
 import { config } from "../config.js";
+import { changeDocumentState } from "../storage/documentStore.js";
 
 export default class ClassificationService {
   constructor(apiUrl) {
@@ -34,11 +34,11 @@ export default class ClassificationService {
   }
 
   async routeFileByConfidence(file, id, assessment) {
-     try {
+    try {
       if (await this.#isConfidenceSufficient(assessment)) {
-        await fsPromises.rename(file.name, `${config.paths.processed}/${id}.pdf`);
+        await changeDocumentState(file.name, config.states.processed);
       } else {
-        await fsPromises.rename(file.name, `${config.paths.inbox}/${id}.pdf`);
+        await changeDocumentState(file.name, config.states.inbox);
       }
     } catch (error) {
       console.log("Error routing PDF file", error);

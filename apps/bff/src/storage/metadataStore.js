@@ -21,7 +21,7 @@ export async function addDocumentToMetadata(document) {
 }
 
 export async function updateDocumentInMetadata(document) {
-  const allMetadataWithoutDocument = await readAll().filter(doc => doc.id !== document.id);
+  const allMetadataWithoutDocument = await readAll().filter((doc) => doc.id !== document.id);
   allMetadataWithoutDocument.push(document);
   await fs.writeFile(config.metadataFile, JSON.stringify(allMetadataWithoutDocument, null, 2));
   return document;

@@ -1,11 +1,11 @@
 import { v4 as uuid } from "uuid";
-import { moveDocumentToState } from "../storage/documentStore.js";
+import { addNewDocument } from "../storage/documentStore.js";
 import { addDocumentToMetadata } from "../storage/metadataStore.js";
 import { config } from "../config.js";
 
 export async function handleManualUpload(file) {
   const id = uuid();
-  const storedPath = await moveDocumentToState(file, id, config.states.scanner, config.classificationType.manual);
+  const storedPath = await addNewDocument(id, file);
 
   const document = {
     id,

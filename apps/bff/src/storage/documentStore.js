@@ -1,41 +1,34 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import { rename, writeFile, readFile } from "node:fs/promises";
 import { config } from "../config.js";
 import { addDocumentToMetadata } from "./metadataStore.js";
 
-function getPathByState(state, statePath) {
+function getNewPathForState(filename, state) {
   switch (state) {
     case config.states.inbox:
-      statePath = config.paths.inbox;
-      break;
+      return `${config.paths.inbox}/${filename}`;
     case config.states.scanner:
-      statePath = config.paths.scanner;
-      break;
+      return `${config.paths.scanner}/${filename}`;
     case config.states.processed:
-      statePath = config.paths.processed;
-      break;
+      return `${config.paths.processed}/${filename}`;
     case config.states.waiting:
-      statePath = config.paths.waiting;
-      break;
+      return `${config.paths.waiting}/${filename}`;
     case config.states.trash:
-      statePath = config.paths.trash;
-      break;
+      return `${config.paths.trash}/${filename}`;
     default:
       throw new Error(`Invalid state: ${state}`);
   }
-  return statePath;
 }
 
-export async function moveDocumentToState(
-  file,
-  id,
-  state
-) {
-  let statePath;
-  statePath = getPathByState(state, statePath);
-  const targetPath = path.join(statePath, `${id}.pdf`);
+export async function changeDocumentState(filepath, state) {
+  const filename = filepath.split("/").pop();
+  const targetPath = getNewPathForState(filename, state);
+  await rename(filepath, targetPath);
+  return targetPath;
+}
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(targetPath, buffer);
+export async function addNewDocument(filename, file) {
+  const targetPath = getNewPathForState(`${filename}.pdf`, config.states.scanner);
+  const buffer = await readFile(file.path);
+  await writeFile(targetPath, buffer);
   return targetPath;
 }

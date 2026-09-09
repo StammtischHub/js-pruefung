@@ -23,18 +23,4 @@ export const config = {
   deletionRetentionDays: 30,
 
   fileSizeUploadLimit: 20 * 1024 * 1024, // 20MB
-
-  states: {
-    inbox: "INBOX",
-    scanner: "SCANNER",
-    processed: "PROCESSED",
-    waiting: "WAITING",
-    trash: "TRASH",
-  },
-
-  classificationType: {
-    auto: "AUTO",
-    corrected: "CORRECTED",
-    manual: "MANUAL",
-  },
 };

@@ -1,18 +1,19 @@
 import { rename, writeFile, readFile } from "node:fs/promises";
 import { config } from "../config.js";
 import { addDocumentToMetadata } from "./metadataStore.js";
+import { State } from "../objects/State.js";
 
 function getNewPathForState(filename, state) {
   switch (state) {
-    case config.states.inbox:
+    case State.INBOX:
       return `${config.paths.inbox}/${filename}`;
-    case config.states.scanner:
+    case State.SCANNER:
       return `${config.paths.scanner}/${filename}`;
-    case config.states.processed:
+    case State.PROCESSED:
       return `${config.paths.processed}/${filename}`;
-    case config.states.waiting:
+    case State.WAITING:
       return `${config.paths.waiting}/${filename}`;
-    case config.states.trash:
+    case State.TRASH:
       return `${config.paths.trash}/${filename}`;
     default:
       throw new Error(`Invalid state: ${state}`);
@@ -27,7 +28,7 @@ export async function changeDocumentState(filepath, state) {
 }
 
 export async function addNewDocument(filename, file) {
-  const targetPath = getNewPathForState(`${filename}.pdf`, config.states.scanner);
+  const targetPath = getNewPathForState(`${filename}.pdf`, State.SCANNER);
   const buffer = await readFile(file.path);
   await writeFile(targetPath, buffer);
   return targetPath;

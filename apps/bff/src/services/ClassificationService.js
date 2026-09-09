@@ -1,5 +1,6 @@
 import { config } from "../config.js";
 import { changeDocumentState } from "../storage/documentStore.js";
+import { State } from "../objects/State.js";
 
 export default class ClassificationService {
   constructor(apiUrl) {
@@ -36,9 +37,9 @@ export default class ClassificationService {
   async routeFileByConfidence(file, id, assessment) {
     try {
       if (await this.#isConfidenceSufficient(assessment)) {
-        await changeDocumentState(file.name, config.states.processed);
+        await changeDocumentState(file.name, State.PROCESSED);
       } else {
-        await changeDocumentState(file.name, config.states.inbox);
+        await changeDocumentState(file.name, State.INBOX);
       }
     } catch (error) {
       console.log("Error routing PDF file", error);

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
+import { Document } from "../objects/Document.js";
 
 export default class ScannerReaderService {
   constructor(directory) {
@@ -33,10 +34,9 @@ export default class ScannerReaderService {
       try {
         await this.waitForFile(filePath);
 
-        const pdfBuffer = await fsPromises.readFile(filePath);
-        const file = new File([pdfBuffer], filePath, { type: "application/pdf" });
+        const document = Document.fromExistingFile(filePath);
 
-        await onPdf(file, filename.substring(0, filename.length - 4));
+        await onPdf(document);
       } catch (error) {
         console.log(`Error processing ${filename}`, error);
       }

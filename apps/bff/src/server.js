@@ -29,8 +29,8 @@ app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`);
 });
 
-readerService.startObserver(async (file, id) => {
+readerService.startObserver(async (document) => {
   classificationService
-    .classifyFile(file, id)
-    .then((assessment) => classificationService.routeFileByConfidence(file, id, assessment));
+    .classifyFile(document)
+    .then((assessment) => classificationService.routeFileByConfidence(document, assessment));
 });

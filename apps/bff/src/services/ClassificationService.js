@@ -1,4 +1,3 @@
-import { changeDocumentState } from "../storage/documentStore.js";
 import { State } from "../objects/State.js";
 
 export default class ClassificationService {
@@ -6,12 +5,14 @@ export default class ClassificationService {
     this.apiUrl = apiUrl;
   }
 
-  async classifyFile(file, id) {
+  async classifyFile(document) {
+    const file = await document.getFile();
+
     if (!(file instanceof File) && !(file instanceof Blob)) {
       throw new Error("A PDF file must be passed");
     }
 
-    const url = this.apiUrl + id;
+    const url = this.apiUrl + document.id;
 
     try {
       const response = await fetch(url, {
@@ -33,12 +34,12 @@ export default class ClassificationService {
     }
   }
 
-  async routeFileByConfidence(file, id, assessment) {
+  async routeFileByConfidence(document, assessment) {
     try {
       if (await this.#isConfidenceSufficient(assessment)) {
-        await changeDocumentState(file.name, State.PROCESSED);
+        await document.changeState(State.PROCESSED);
       } else {
-        await changeDocumentState(file.name, State.INBOX);
+        await document.changeState(State.INBOX);
       }
     } catch (error) {
       console.log("Error routing PDF file", error);

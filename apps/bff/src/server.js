@@ -5,7 +5,6 @@ import { config } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
-import { classifyFile } from "./services/ClassificationService.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);

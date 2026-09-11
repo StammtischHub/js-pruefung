@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import { config } from "../config.js";
+import { NotFoundError } from "../objects/errors/NotFoundError.js";
+import { Document } from "../objects/Document.js";
 
 let queue = Promise.resolve();
 function enqueue(task) {
@@ -55,14 +57,14 @@ export async function getDocumentsByState(state) {
   );
 }
 
-export async function getDocumentByFilename(filename) {
+export async function getDocumentById(id) {
   return enqueue(() =>
     readAll().then((metadata) => {
-      const document = metadata.find((doc) => doc.filename === filename);
+      const document = metadata.find((doc) => doc.id === id);
       if (!document) {
-        throw new Error(`Document with filename ${filename} not found`);
+        throw new NotFoundError(`Document with ID ${id} not found`);
       }
-      return document;
+      return new Document(document);
     })
   );
 }

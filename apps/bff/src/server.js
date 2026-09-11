@@ -34,6 +34,6 @@ readerService.startObserver(async (document) => {
     const assessment = await classificationService.classifyFile(document);
     await document.classify(assessment);
   } catch (error) {
-    console.error(`Error processing document ${document.id}`, error);
+    console.error(`Error processing document ${document.filename}`, error);
   }
 });

@@ -5,7 +5,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <p>
         <strong>ID:</strong>
-        <span>${doc.id}</span>
+        <span>${doc.filename}</span>
       </p>
 
       <p>

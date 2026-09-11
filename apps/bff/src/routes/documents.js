@@ -1,7 +1,7 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
 import { Document } from "../objects/Document.js";
-import { getAllMetadata } from "../storage/metadataStore.js";
+import { getDocumentsByState } from "../services/MetadataService.js";
 
 const router = express.Router();
 
@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 
     if (!state) return res.status(400).json({ error: "No 'state' query provided." });
 
-    const metadata = await getAllMetadata(state.toUpperCase());
+    const metadata = await getDocumentsByState(state.toUpperCase());
     return res.status(200).json(metadata.map((document) => document.path));
   } catch (err) {
     console.error(err);

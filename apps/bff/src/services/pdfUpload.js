@@ -3,9 +3,7 @@ import path from "node:path";
 import { config } from "../config.js";
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, config.paths.scanner),
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: config.fileSizeUploadLimit },
 
   fileFilter: (req, file, cb) => {

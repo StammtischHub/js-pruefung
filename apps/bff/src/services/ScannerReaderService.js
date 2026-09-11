@@ -1,11 +1,13 @@
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
+import { Document } from "../objects/Document.js";
 
 export default class ScannerReaderService {
   constructor(directory) {
     this.directory = directory;
     this.watcher = null;
+    this.processingPaths = new Set();
   }
 
   startObserver(onPdf) {
@@ -24,21 +26,33 @@ export default class ScannerReaderService {
 
       const filePath = path.join(this.directory, filename);
 
-      try {
-        await fsPromises.access(filePath, fsPromises.constants.F_OK);
-      } catch {
+      if (this.processingPaths.has(filePath)) {
         return;
       }
+      this.processingPaths.add(filePath);
 
       try {
+        try {
+          await fsPromises.access(filePath, fsPromises.constants.F_OK);
+        } catch {
+          return;
+        }
+
         await this.waitForFile(filePath);
 
-        const pdfBuffer = await fsPromises.readFile(filePath);
-        const file = new File([pdfBuffer], filePath, { type: "application/pdf" });
+        try {
+          await fsPromises.access(filePath, fsPromises.constants.F_OK);
+        } catch {
+          return;
+        }
 
-        await onPdf(file, filename.substring(0, filename.length - 4));
+        const document = await Document.forScannerFile(filePath);
+
+        await onPdf(document);
       } catch (error) {
         console.log(`Error processing ${filename}`, error);
+      } finally {
+        this.processingPaths.delete(filePath);
       }
     });
     console.log("Observer started");

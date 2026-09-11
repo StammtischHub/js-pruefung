@@ -20,20 +20,9 @@ export const config = {
 
   metadataFile: path.join(projectRoot, "data", "metadata.json"),
 
+  confidenceThreshold: 0.6,
+
   deletionRetentionDays: 30,
 
   fileSizeUploadLimit: 20 * 1024 * 1024, // 20MB
-
-  states: {
-    inbox: "INBOX",
-    scanner: "SCANNER",
-    processed: "PROCESSED",
-    waiting: "WAITING",
-    trash: "TRASH",
-  },
-
-  source: {
-    auto: "AUTO",
-    manual: "MANUAL",
-  },
 };

@@ -1,7 +1,9 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
 import { Document } from "../objects/Document.js";
-import { getDocumentsByState } from "../services/MetadataService.js";
+import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
+import { State } from "../objects/types/State.js";
+import { NotFoundError } from "../objects/errors/NotFoundError.js";
 
 const router = express.Router();
 
@@ -46,5 +48,40 @@ router.get("/", async (req, res) => {
     return res.status(500).json({ error: "Fetching documents failed." });
   }
 });
+
+router.post("/:id/wait", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    document.changeState(State.WAITING);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document back to inbox failed." });
+  }
+});
+
+router.post("/:id/continue", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    document.changeState(State.INBOX);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document back to inbox failed." });
+  }
+});
+
 
 export default router;

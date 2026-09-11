@@ -22,7 +22,7 @@ export const config = {
 
   confidenceThreshold: 0.6,
 
-  deletionRetentionDays: 30,
+  deletionRetentionSeconds: 30,
 
   fileSizeUploadLimit: 20 * 1024 * 1024, // 20MB
 };

@@ -105,8 +105,7 @@ router.post("/:id/mark-delete", async (req, res) => {
     const id = req.params.id;
     const document = await getDocumentById(id);
 
-    document.deleteFlagSetDate = new Date().toISOString();
-    await document.changeState(State.TRASH);
+    await document.flagAsDelete();
     return res.status(200).json(document);
   } catch (err) {
     if (err instanceof NotFoundError) {

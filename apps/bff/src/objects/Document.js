@@ -15,7 +15,7 @@ export class Document {
     this.classificationResult = data.classificationResult ?? null;
     this.classificationType = data.classificationType ?? null;
     this.editedBy = data.editedBy ?? [];
-    this.deleteFlagSetDate = data.deleteFlagSetDate ?? null;
+    this.deletionFlagSetDate = data.deletionFlagSetDate ?? null;
   }
 
   static async forScannerFile(filepath) {
@@ -98,5 +98,10 @@ export class Document {
 
   async toFileObject() {
     return new File([await readFile(this.path)], this.path, { type: "application/pdf" });
+  }
+
+  async flagAsDelete() {
+    this.deletionFlagSetDate = new Date().toISOString();
+    await this.changeState(State.TRASH);
   }
 }

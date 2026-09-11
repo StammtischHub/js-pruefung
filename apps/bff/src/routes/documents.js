@@ -54,7 +54,7 @@ router.post("/:id/wait", async (req, res) => {
     const id = req.params.id;
     const document = await getDocumentById(id);
 
-    document.changeState(State.WAITING);
+    await document.changeState(State.WAITING);
     return res.status(200).json(document);
   } catch (err) {
     if (err instanceof NotFoundError) {
@@ -71,7 +71,7 @@ router.post("/:id/continue", async (req, res) => {
     const id = req.params.id;
     const document = await getDocumentById(id);
 
-    document.changeState(State.INBOX);
+    await document.changeState(State.INBOX);
     return res.status(200).json(document);
   } catch (err) {
     if (err instanceof NotFoundError) {
@@ -82,6 +82,5 @@ router.post("/:id/continue", async (req, res) => {
     return res.status(500).json({ error: "Set document back to inbox failed." });
   }
 });
-
 
 export default router;

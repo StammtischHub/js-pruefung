@@ -13,6 +13,7 @@ export class Document {
     this.originalName = data.originalName;
     this.path = data.path;
     this.state = data.state;
+    this.creationDate = new Date().toISOString()
     this.classificationResult = data.classificationResult
       ? new ClassificationResult(data.classificationResult)
       : null;

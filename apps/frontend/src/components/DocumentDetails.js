@@ -3,29 +3,35 @@ export function renderDocumentDetails(app, doc, onBack) {
     <section id="detail-view" class="view">
       <h2>Dokumentdetails</h2>
 
+      <h3>Dokument</h3>
+
       <p>
         <strong>ID:</strong>
-        <span>${doc.filename}</span>
+        <span>${doc.id}</span>
       </p>
 
       <p>
         <strong>Dateiname:</strong>
-        <span>${doc.filename}</span>
+        <span>${doc.originalName}</span>
       </p>
 
       <p>
         <strong>Status:</strong>
-        <span>${doc.status}</span>
+        <span>${doc.state}</span>
       </p>
+
+      <p>
+        <strong>Pfad:</strong>
+        <span>${doc.path}</span>
+      </p>
+
+      <hr />
+
+      <h3>Klassifizierung</h3>
 
       <p>
         <strong>Kategorie:</strong>
-        <span>${doc.category}</span>
-      </p>
-
-      <p>
-        <strong>Confidence:</strong>
-        <span>${Math.round(doc.confidence * 100)} %</span>
+        <span>${doc.classificationResult.kind}</span>
       </p>
 
       <p>
@@ -35,24 +41,26 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <hr />
 
-      <h3>Metadaten</h3>
+      <h3>Erkannte Metadaten</h3>
 
       <p>
         <strong>Dokument-ID:</strong>
-        <span>${doc.docId.value}</span>
-        (${Math.round(doc.docId.score * 100)} %)
+        <span>${doc.classificationResult.docId.value}</span>
+        (${Math.round(doc.classificationResult.docId.score * 100)} %)
       </p>
 
       <p>
         <strong>Dokumentdatum:</strong>
-        <span>${doc.docDate.value}</span>
-        (${Math.round(doc.docDate.score * 100)} %)
+        <span>
+          ${new Date(doc.classificationResult.docDateParsed).toLocaleDateString("de-DE")}
+        </span>
+        (${Math.round(doc.classificationResult.docDateSic.score * 100)} %)
       </p>
 
       <p>
         <strong>Betreff:</strong>
-        <span>${doc.docSubject.value}</span>
-        (${Math.round(doc.docSubject.score * 100)} %)
+        <span>${doc.classificationResult.docSubject.value}</span>
+        (${Math.round(doc.classificationResult.docSubject.score * 100)} %)
       </p>
 
       <button type="button" id="back-to-inbox">

@@ -8,7 +8,7 @@ async function getInboxDocuments() {
 export async function renderInboxView(app) {
   const documents = await getInboxDocuments();
 
-  const inboxDocuments = documents.filter((doc) => doc.status === "inbox");
+  const inboxDocuments = documents.filter((doc) => doc.state == "INBOX");
 
   app.innerHTML = `
     <section class="view">
@@ -50,10 +50,16 @@ export async function renderInboxView(app) {
     row.dataset.id = doc.id;
 
     row.innerHTML = `
-      <td>${doc.filename}</td>
-      <td>${doc.status}</td>
-      <td>${doc.category}</td>
-      <td>${Math.round(doc.confidence * 100)} %</td>
+      <td>${doc.originalName}</td>
+      <td>${doc.state}</td>
+      <td>${doc.classificationResult.kind}</td>
+      <td>${Math.round(
+        Math.min(
+          doc.classificationResult.docId.score,
+          doc.classificationResult.docDateSic.score,
+          doc.classificationResult.docSubject.score
+        ) * 100
+      )} %</td>
       <td>${doc.classificationType}</td>
     `;
 

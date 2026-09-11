@@ -1,4 +1,7 @@
-import { api } from "./api.js";
+import { renderInboxView } from "./views/InboxView.js";
+import { renderReviewView } from "./views/ReviewView.js";
+import { renderWaitingView } from "./views/WaitingView.js";
+import { renderTrashView } from "./views/TrashView.js";
 
 const app = document.getElementById("app");
 const navButtons = document.querySelectorAll("#main-nav button");
@@ -10,17 +13,30 @@ navButtons.forEach((button) => {
 });
 
 function renderView(viewName) {
-  app.innerHTML = `<p>View "${viewName}" ist noch nicht implementiert.</p>`;
-}
+  navButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === viewName);
+  });
 
-async function checkBackend() {
-  try {
-    await api.health();
-    console.log("BFF ist erreichbar.");
-  } catch (err) {
-    console.warn("BFF nicht erreichbar.", err);
+  switch (viewName) {
+    case "inbox":
+      renderInboxView(app);
+      break;
+
+    case "review":
+      renderReviewView(app);
+      break;
+
+    case "waiting":
+      renderWaitingView(app);
+      break;
+
+    case "trash":
+      renderTrashView(app);
+      break;
+
+    default:
+      renderInboxView(app);
   }
 }
 
-checkBackend();
 renderView("inbox");

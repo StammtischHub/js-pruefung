@@ -1,9 +1,9 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
-import { Document } from "../objects/Document.js";
+import { Document } from "../domain/Document.js";
 import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
-import { State } from "../objects/types/State.js";
-import { NotFoundError } from "../objects/errors/NotFoundError.js";
+import { State } from "../domain/types/State.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
 const router = express.Router();
 
@@ -46,6 +46,23 @@ router.get("/", async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Fetching documents failed." });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const document = await getDocumentById(id);
+
+    await document.updateClassificationResultMetadata(req.body);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Updating document failed." });
   }
 });
 
@@ -117,12 +134,12 @@ router.post("/:id/mark-delete", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id/classify", async (req, res) => {
   try {
     const { id } = req.params;
     const document = await getDocumentById(id);
 
-    await document.updateClassificationResultMetadata(req.body);
+    await document.classify();
     return res.status(200).json(document);
   } catch (err) {
     if (err instanceof NotFoundError) {

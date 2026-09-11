@@ -1,6 +1,6 @@
 import { config } from "../config.js";
 
-export async function classifyFile(document) {
+export async function classifyDocument(document) {
   const file = await document.toFileObject();
 
   if (!(file instanceof File) && !(file instanceof Blob)) {
@@ -19,12 +19,12 @@ export async function classifyFile(document) {
     });
 
     if (!response.ok) {
-      throw new Error(`API-Error: ${response.status} ${response.statusText}`);
+      console.error(`API-Error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.log("Error sending PDF file", error);
+    console.error("Error sending PDF file", error);
     throw error;
   }
 }

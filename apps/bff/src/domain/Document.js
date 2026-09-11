@@ -5,7 +5,7 @@ import { addDocumentToMetadata, updateDocumentInMetadata } from "../services/Met
 import { ClassificationType } from "./types/ClassificationType.js";
 import { v4 as uuid } from "uuid";
 import { ClassificationResult } from "./ClassificationResult.js";
-import { classifyFile } from "../services/ClassificationService.js";
+import { classifyDocument } from "../services/ClassificationService.js";
 
 export class Document {
   constructor(data) {
@@ -77,7 +77,7 @@ export class Document {
   }
 
   async classify() {
-    const assessment = await classifyFile(this);
+    const assessment = await classifyDocument(this);
 
     this.classificationResult = new ClassificationResult(assessment.result);
     this.classificationType = ClassificationType.AUTO;

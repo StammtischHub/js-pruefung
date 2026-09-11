@@ -46,7 +46,7 @@ export default class ScannerReaderService {
           return;
         }
 
-        const document = Document.fromExistingFile(filePath);
+        const document = await Document.forScannerFile(filePath);
 
         await onPdf(document);
       } catch (error) {

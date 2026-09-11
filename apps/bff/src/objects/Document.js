@@ -1,8 +1,9 @@
 import { State } from "./State.js";
 import { config } from "../config.js";
 import { readFile, rename, writeFile } from "node:fs/promises";
-import { v4 as uuid } from "uuid";
 import { addDocumentToMetadata, updateDocumentInMetadata } from "../storage/metadataStore.js";
+import { ClassificationType } from "./ClassificationType.js";
+import { v4 as uuid } from "uuid";
 
 export class Document {
   constructor(id, originalName, path, state) {
@@ -11,14 +12,11 @@ export class Document {
     this.path = path;
     this.state = state;
     this.classificationType = null;
-    this.confidence = null;
     this.editedBy = [];
     this.deleteFlagSetDate = null;
-
-    addDocumentToMetadata(this).then(() => this);
   }
 
-  static fromExistingFile(filepath) {
+  static async forScannerFile(filepath) {
     const filepathParts = filepath.split("/");
     const stateFolder = filepathParts[filepathParts.length - 2];
     const state = Object.values(State).find((state) =>
@@ -26,18 +24,23 @@ export class Document {
     );
     const filename = filepathParts.pop().split(".")[0];
 
-    return new Document(filename, filename, filepath, state);
+    const document = new Document(filename, filename, filepath, state);
+    await addDocumentToMetadata(document);
+    return document;
   }
 
-  static forNewFile(file) {
+  static async forNewFile(file) {
     const id = uuid();
-    const path = this.#getNewPathForState(State.SCANNER);
-    writeFile(path, file.buffer).then(() => {});
+    const document = new Document(id, file.name, null, State.SCANNER);
+    document.path = document.#getPathForState(State.SCANNER);
 
-    return new Document(id, file.name, path, State.SCANNER);
+    await writeFile(document.path, file.buffer);
+
+    await addDocumentToMetadata(document);
+    return document;
   }
 
-  #getNewPathForState(state) {
+  #getPathForState(state) {
     switch (state) {
       case State.INBOX:
         return `${config.paths.inbox}/${this.id}.pdf`;
@@ -54,8 +57,26 @@ export class Document {
     }
   }
 
+  #isConfidenceSufficient(assessment) {
+    for (const value of Object.values(assessment.result)) {
+      if (!value.score) continue;
+
+      if (value.score < config.confidenceThreshold) return false;
+    }
+    return false;
+  }
+
   addEditor(editor) {
     this.editedBy.push(editor);
+  }
+
+  async classify(assessment) {
+    this.classificationType = ClassificationType.AUTO;
+    if (this.#isConfidenceSufficient(assessment)) {
+      await this.changeState(State.PROCESSED);
+    } else {
+      await this.changeState(State.INBOX);
+    }
   }
 
   async changeState(newState) {
@@ -63,7 +84,7 @@ export class Document {
       throw new Error(`Invalid state: ${newState}`);
     }
 
-    const targetPath = this.#getNewPathForState(newState);
+    const targetPath = this.#getPathForState(newState);
     await rename(this.path, targetPath);
     this.path = targetPath;
     this.state = newState;

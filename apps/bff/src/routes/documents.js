@@ -1,6 +1,6 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
-import { handleManualUpload } from "../services/documentService.js";
+import { Document } from "../objects/Document.js";
 
 const router = express.Router();
 
@@ -23,9 +23,10 @@ router.post("/", (req, res) => {
     }
 
     try {
-      const document = await handleManualUpload(req.file);
+      const document = await Document.forNewFile(req.file);
       return res.status(201).json(document);
-    } catch {
+    } catch (err) {
+      console.error(err);
       return res.status(500).json({ error: "Processing failed." });
     }
   });

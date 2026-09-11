@@ -32,7 +32,7 @@ app.listen(config.port, () => {
 readerService.startObserver(async (document) => {
   try {
     const assessment = await classificationService.classifyFile(document);
-    await classificationService.routeFileByConfidence(document, assessment);
+    await document.classify(assessment);
   } catch (error) {
     console.error(`Error processing document ${document.id}`, error);
   }

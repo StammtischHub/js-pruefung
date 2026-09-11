@@ -25,17 +25,10 @@ export async function addDocumentToMetadata(document) {
     const allMetadata = await readAll();
     const documentIndex = allMetadata.findIndex((doc) => doc.id === document.id);
 
-    if (documentIndex !== -1) {
-      console.warn(
-        `Metadata für ${document.id} existiert bereits, wird aktualisiert statt dupliziert`
-      );
-      allMetadata[documentIndex] = document;
-    } else {
+    if (documentIndex === -1) {
       allMetadata.push(document);
+      await fs.writeFile(config.metadataFile, JSON.stringify(allMetadata, null, 2));
     }
-
-    await fs.writeFile(config.metadataFile, JSON.stringify(allMetadata, null, 2));
-    return document;
   });
 }
 

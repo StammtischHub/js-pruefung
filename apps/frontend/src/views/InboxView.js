@@ -1,5 +1,6 @@
 import { mockDocuments } from "../mocks/mockDocuments.js";
 import { renderDocumentDetails } from "../components/DocumentDetails.js";
+import { createConfidenceView } from "../components/ConfidenceView.js";
 
 async function getInboxDocuments() {
   return mockDocuments;
@@ -53,13 +54,13 @@ export async function renderInboxView(app) {
       <td>${doc.originalName}</td>
       <td>${doc.state}</td>
       <td>${doc.classificationResult.kind}</td>
-      <td>${Math.round(
+      <td>${createConfidenceView(
         Math.min(
           doc.classificationResult.docId.score,
           doc.classificationResult.docDateSic.score,
           doc.classificationResult.docSubject.score
-        ) * 100
-      )} %</td>
+        )
+      )}</td>
       <td>${doc.classificationType}</td>
     `;
 

@@ -48,7 +48,9 @@ export async function updateDocumentInMetadata(document) {
 }
 
 export async function getAllMetadata(state = undefined) {
-  return enqueue(() => readAll().then((metadata) => {
-    return state ? metadata.filter((document) => document.state === state) : metadata;
-  }));
+  return enqueue(() =>
+    readAll().then((metadata) => {
+      return state ? metadata.filter((document) => document.state === state) : metadata;
+    })
+  );
 }

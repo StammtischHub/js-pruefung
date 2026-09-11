@@ -40,11 +40,7 @@ router.get("/", async (req, res) => {
     if (!state) return res.status(400).json({ error: "No 'state' query provided." });
 
     const metadata = await getAllMetadata(state.toUpperCase());
-    return res
-      .status(200)
-      .json(
-        metadata.map((document) => document.path)
-      );
+    return res.status(200).json(metadata.map((document) => document.path));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Fetching documents failed." });

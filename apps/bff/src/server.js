@@ -5,11 +5,9 @@ import { config } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
-import ClassificationService from "./services/ClassificationService.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
-const classificationService = new ClassificationService(config.classificationServiceUrl);
 
 app.use(cors());
 app.use(express.json());
@@ -31,8 +29,7 @@ app.listen(config.port, () => {
 
 readerService.startObserver(async (document) => {
   try {
-    const assessment = await classificationService.classifyFile(document);
-    await document.classify(assessment);
+    await document.classify();
   } catch (error) {
     console.error(`Error processing document ${document.filename}`, error);
   }

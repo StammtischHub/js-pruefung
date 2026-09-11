@@ -1,17 +1,16 @@
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
-import { Document } from "../objects/Document.js";
+import { Document } from "../domain/Document.js";
 
 export default class ScannerReaderService {
   constructor(directory) {
     this.directory = directory;
-    this.watcher = null;
     this.processingPaths = new Set();
   }
 
   startObserver(onPdf) {
-    this.watcher = fs.watch(this.directory, async (eventType, filename) => {
+    fs.watch(this.directory, async (eventType, filename) => {
       if (!filename) {
         return;
       }
@@ -80,12 +79,5 @@ export default class ScannerReaderService {
     }
 
     throw new Error(`File was not made available in time: ${filePath}`);
-  }
-
-  stopObserver() {
-    if (this.watcher) {
-      this.watcher.close();
-      this.watcher = null;
-    }
   }
 }

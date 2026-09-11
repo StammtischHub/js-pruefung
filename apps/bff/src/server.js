@@ -5,8 +5,8 @@ import { config } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
-import schedule from "node-schedule"
-import { deleteOldFiles } from "./services/deletionService.js";
+import schedule from "node-schedule";
+import { deleteOldFiles } from "./services/DeletionService.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
@@ -38,5 +38,5 @@ readerService.startObserver(async (document) => {
 });
 
 schedule.scheduleJob(`*/${config.deletionRetentionSeconds} * * * * *`, () => {
-  deleteOldFiles().then()
+  deleteOldFiles().then();
 });

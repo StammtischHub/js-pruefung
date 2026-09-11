@@ -1,5 +1,5 @@
 import express from "express";
-import { pdfUpload } from "../services/PdfUpload.js";
+import { pdfUpload } from "../services/pdfUpload.js";
 import { Document } from "../objects/Document.js";
 import { getDocumentsByState } from "../services/MetadataService.js";
 

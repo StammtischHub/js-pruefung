@@ -4,6 +4,7 @@ import { Document } from "../domain/Document.js";
 import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
 import { State } from "../domain/types/State.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
+import { next } from "../services/sortingService.js";
 
 const router = express.Router();
 
@@ -148,6 +149,16 @@ router.put("/:id/classify", async (req, res) => {
     }
     console.error(err);
     return res.status(500).json({ error: "Updating document failed." });
+  }
+});
+
+router.get("/next", async (req, res) => {
+  try {
+    const document = await next();
+    return res.status(200).json(document);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Marking the document to delete failed." });
   }
 });
 

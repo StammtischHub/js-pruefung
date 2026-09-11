@@ -1,6 +1,7 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
 import { Document } from "../objects/Document.js";
+import { getAllMetadata } from "../storage/metadataStore.js";
 
 const router = express.Router();
 
@@ -30,6 +31,20 @@ router.post("/", (req, res) => {
       return res.status(500).json({ error: "Processing failed." });
     }
   });
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const state = req.query.state;
+
+    if (!state) return res.status(400).json({ error: "No 'state' query provided." });
+
+    const metadata = await getAllMetadata(state.toUpperCase());
+    return res.status(200).json(metadata.map((document) => document.path));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Fetching documents failed." });
+  }
 });
 
 export default router;

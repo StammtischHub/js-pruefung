@@ -117,7 +117,7 @@ router.post("/:id/finish", async (req, res) => {
   }
 });
 
-router.post("/:id/mark-delete", async (req, res) => {
+router.post("/:id/prep-for-deletion", async (req, res) => {
   try {
     const id = req.params.id;
     const document = await getDocumentById(id);

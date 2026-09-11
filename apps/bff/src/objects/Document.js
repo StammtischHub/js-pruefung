@@ -1,16 +1,18 @@
-import { State } from "./State.js";
+import { State } from "./types/State.js";
 import { config } from "../config.js";
 import { readFile, rename, writeFile } from "node:fs/promises";
-import { addDocumentToMetadata, updateDocumentInMetadata } from "../storage/metadataStore.js";
-import { ClassificationType } from "./ClassificationType.js";
+import { addDocumentToMetadata, updateDocumentInMetadata } from "../services/MetadataService.js";
+import { ClassificationType } from "./types/ClassificationType.js";
 import { v4 as uuid } from "uuid";
+import { ClassificationResult } from "./ClassificationResult.js";
 
 export class Document {
-  constructor(id, originalName, path, state) {
+  constructor({ id, originalName, path, state }) {
     this.id = id;
     this.originalName = originalName;
     this.path = path;
     this.state = state;
+    this.classificationResult = null;
     this.classificationType = null;
     this.editedBy = [];
     this.deleteFlagSetDate = null;
@@ -24,14 +26,24 @@ export class Document {
     );
     const filename = filepathParts.pop().split(".")[0];
 
-    const document = new Document(filename, filename, filepath, state);
+    const document = new Document({
+      id: filename,
+      originalName: filename,
+      path: filepath,
+      state,
+    });
     await addDocumentToMetadata(document);
     return document;
   }
 
   static async forNewFile(file) {
     const id = uuid();
-    const document = new Document(id, file.name, null, State.SCANNER);
+    const document = new Document({
+      id: id,
+      originalName: file.name,
+      path: null,
+      state: State.SCANNER,
+    });
     document.path = document.#getPathForState(State.SCANNER);
 
     await writeFile(document.path, file.buffer);
@@ -57,22 +69,14 @@ export class Document {
     }
   }
 
-  #isConfidenceSufficient(assessment) {
-    for (const value of Object.values(assessment.result)) {
-      if (!value.score) continue;
-
-      if (value.score < config.confidenceThreshold) return false;
-    }
-    return false;
-  }
-
   addEditor(editor) {
     this.editedBy.push(editor);
   }
 
   async classify(assessment) {
+    this.classificationResult = new ClassificationResult(assessment.result);
     this.classificationType = ClassificationType.AUTO;
-    if (this.#isConfidenceSufficient(assessment)) {
+    if (this.classificationResult.isConfidenceSufficient()) {
       await this.changeState(State.PROCESSED);
     } else {
       await this.changeState(State.INBOX);

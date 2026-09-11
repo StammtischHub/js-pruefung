@@ -47,10 +47,22 @@ export async function updateDocumentInMetadata(document) {
   });
 }
 
-export async function getAllMetadata(state = undefined) {
+export async function getDocumentsByState(state) {
   return enqueue(() =>
     readAll().then((metadata) => {
-      return state ? metadata.filter((document) => document.state === state) : metadata;
+      return metadata.filter((document) => document.state === state);
+    })
+  );
+}
+
+export async function getDocumentByFilename(filename) {
+  return enqueue(() =>
+    readAll().then((metadata) => {
+      const document = metadata.find((doc) => doc.filename === filename);
+      if (!document) {
+        throw new Error(`Document with filename ${filename} not found`);
+      }
+      return document;
     })
   );
 }

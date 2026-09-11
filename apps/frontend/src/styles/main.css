@@ -114,11 +114,13 @@ main {
 }
 
 .confidence-bar {
-  width: 100px;
+  width: 125px;
   height: 8px;
   background: #e5e5e5;
   border-radius: 4px;
   overflow: hidden;
+
+  transform: translateY(1px);
 }
 
 .confidence-bar-fill {
@@ -129,4 +131,10 @@ main {
 .confidence span {
   min-width: 3rem;
   font-size: 0.875rem;
+}
+
+.confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }

@@ -44,26 +44,37 @@ export function renderDocumentDetails(app, doc, onBack) {
       <hr />
 
       <h3>Erkannte Metadaten</h3>
-
       <p>
         <strong>Dokument-ID:</strong>
         <span>${doc.classificationResult.docId.value}</span>
-        (${Math.round(doc.classificationResult.docId.score * 100)} %)
       </p>
+
+      <div class="confidence-row">
+        <strong>Confidence:</strong>
+        ${createConfidenceView(doc.classificationResult.docId.score)}
+      </div>
+
 
       <p>
         <strong>Dokumentdatum:</strong>
-        <span>
-          ${new Date(doc.classificationResult.docDateParsed).toLocaleDateString("de-DE")}
-        </span>
-        (${Math.round(doc.classificationResult.docDateSic.score * 100)} %)
+        <span>${doc.classificationResult.docDateSic.value}</span>
       </p>
 
-      <p>
+      <div class="confidence-row">
+        <strong>Confidence:</strong>
+        ${createConfidenceView(doc.classificationResult.docDateSic.score)}
+      </div>
+
+
+     <p>
         <strong>Betreff:</strong>
         <span>${doc.classificationResult.docSubject.value}</span>
-        (${Math.round(doc.classificationResult.docSubject.score * 100)} %)
       </p>
+
+      <div class="confidence-row">
+        <strong>Confidence:</strong>
+        ${createConfidenceView(doc.classificationResult.docSubject.score)}
+      </div>
 
       <button type="button" id="back-to-inbox">
         Zurück zur Inbox

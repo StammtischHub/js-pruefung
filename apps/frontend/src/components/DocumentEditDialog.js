@@ -70,9 +70,9 @@ export function renderDocumentEditDialog(doc, onSave) {
 
     const changes = {
       category: categoryInput.value,
-      docId: docIdInput.value,
+      docId: docIdInput.value.trim(),
       docDate: docDateInput.value,
-      docSubject: docSubjectInput.value,
+      docSubject: docSubjectInput.value.trim(),
     };
 
     try {

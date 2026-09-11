@@ -22,7 +22,7 @@ export const mockDocuments = [
     },
     classificationType: "AUTO",
     editedBy: [],
-    deleteFlagSetDate: null,
+    deletionFlagSetDate: null,
   },
   {
     id: "2",
@@ -47,6 +47,6 @@ export const mockDocuments = [
     },
     classificationType: "AUTO",
     editedBy: [],
-    deleteFlagSetDate: null,
+    deletionFlagSetDate: null,
   },
 ];

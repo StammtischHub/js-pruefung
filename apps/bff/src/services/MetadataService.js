@@ -22,6 +22,12 @@ async function readAll() {
   }
 }
 
+export async function removeDocuments(documentIds) {
+  const allMetadata = await readAll();
+  const remaining = allMetadata.filter((item) => !documentIds.includes(item.id));
+  await fs.writeFile(config.metadataFile, JSON.stringify(remaining, null, 2));
+}
+
 export async function addDocumentToMetadata(document) {
   return enqueue(async () => {
     const allMetadata = await readAll();

@@ -59,7 +59,8 @@ export async function renderInboxView(app) {
           doc.classificationResult.docId.score,
           doc.classificationResult.docDateSic.score,
           doc.classificationResult.docSubject.score
-        ))}</td>
+        )
+      )}</td>
       <td>${doc.classificationType}</td>
     `;
 

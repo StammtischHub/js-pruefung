@@ -6,7 +6,7 @@ export default class ClassificationService {
   }
 
   async classifyFile(document) {
-    const file = await document.getFile();
+    const file = await document.toFileObject();
 
     if (!(file instanceof File) && !(file instanceof Blob)) {
       throw new Error("A PDF file must be passed");

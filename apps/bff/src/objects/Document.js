@@ -2,6 +2,7 @@ import { State } from "./State.js";
 import { config } from "../config.js";
 import { readFile, rename, writeFile } from "node:fs/promises";
 import { v4 as uuid } from "uuid";
+import { addDocumentToMetadata, updateDocumentInMetadata } from "../storage/metadataStore.js";
 
 export class Document {
   constructor(id, originalName, path, state) {
@@ -13,6 +14,8 @@ export class Document {
     this.confidence = null;
     this.editedBy = [];
     this.deleteFlagSetDate = null;
+
+    addDocumentToMetadata(this).then(() => this);
   }
 
   static fromExistingFile(filepath) {
@@ -28,24 +31,24 @@ export class Document {
 
   static forNewFile(file) {
     const id = uuid();
-    const path = this.#getNewPathForState(id, State.SCANNER);
+    const path = this.#getNewPathForState(State.SCANNER);
     writeFile(path, file.buffer).then(() => {});
 
     return new Document(id, file.name, path, State.SCANNER);
   }
 
-  #getNewPathForState(filename, state) {
+  #getNewPathForState(state) {
     switch (state) {
       case State.INBOX:
-        return `${config.paths.inbox}/${filename}.pdf`;
+        return `${config.paths.inbox}/${this.id}.pdf`;
       case State.SCANNER:
-        return `${config.paths.scanner}/${filename}.pdf`;
+        return `${config.paths.scanner}/${this.id}.pdf`;
       case State.PROCESSED:
-        return `${config.paths.processed}/${filename}.pdf`;
+        return `${config.paths.processed}/${this.id}.pdf`;
       case State.WAITING:
-        return `${config.paths.waiting}/${filename}.pdf`;
+        return `${config.paths.waiting}/${this.id}.pdf`;
       case State.TRASH:
-        return `${config.paths.trash}/${filename}.pdf`;
+        return `${config.paths.trash}/${this.id}.pdf`;
       default:
         throw new Error(`Invalid state: ${state}`);
     }
@@ -60,13 +63,15 @@ export class Document {
       throw new Error(`Invalid state: ${newState}`);
     }
 
-    const targetPath = this.#getNewPathForState(this.originalName, newState);
+    const targetPath = this.#getNewPathForState(newState);
     await rename(this.path, targetPath);
     this.path = targetPath;
     this.state = newState;
+
+    await updateDocumentInMetadata(this);
   }
 
-  toFileObject() {
-    return new File([readFile(this.path)], this.originalName, { type: "application/pdf" });
+  async toFileObject() {
+    return new File([await readFile(this.path)], this.path, { type: "application/pdf" });
   }
 }

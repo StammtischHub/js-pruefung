@@ -94,7 +94,8 @@ main {
   margin: 1rem 0;
 }
 
-#back-to-inbox {
+#back-to-inbox,
+#edit-document {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   border: 1px solid #d0d0d0;
@@ -103,6 +104,30 @@ main {
   cursor: pointer;
 }
 
-#back-to-inbox:hover {
+#back-to-inbox:hover,
+#edit-document:hover {
   background: #f0f0f0;
+}
+
+.success-message {
+  color: #256029;
+  background: #edf7ed;
+  border: 1px solid #b7d8b9;
+  border-radius: 6px;
+}
+
+.success-message:not(:empty) {
+  padding: 0.75rem 1rem;
+}
+
+.success-message:empty {
+  display: none;
+}
+
+.error-message {
+  padding: 0.75rem 1rem;
+  color: #9b1c1c;
+  background: #fdf0f0;
+  border: 1px solid #e3b4b4;
+  border-radius: 6px;
 }

@@ -83,4 +83,21 @@ router.post("/:id/continue", async (req, res) => {
   }
 });
 
+router.post("/:id/finish", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    await document.changeState(State.PROCESSED);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document to processed failed." });
+  }
+});
+
 export default router;

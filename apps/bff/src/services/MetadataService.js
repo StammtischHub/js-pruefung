@@ -10,7 +10,7 @@ function enqueue(task) {
   return result;
 }
 
-export async function readAll() {
+async function readAll() {
   try {
     const raw = await fs.readFile(config.metadataFile, "utf-8");
     return JSON.parse(raw);
@@ -22,9 +22,9 @@ export async function readAll() {
   }
 }
 
-export async function removeDocuments(idsToRemove) {
+export async function removeDocuments(documentIds) {
   const allMetadata = await readAll();
-  const remaining = allMetadata.filter((item) => !idsToRemove.includes(item.id));
+  const remaining = allMetadata.filter((item) => !documentIds.includes(item.id));
   await fs.writeFile(config.metadataFile, JSON.stringify(remaining, null, 2));
 }
 

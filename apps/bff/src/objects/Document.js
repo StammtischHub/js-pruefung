@@ -113,7 +113,7 @@ export class Document {
     return new File([await readFile(this.path)], this.path, { type: "application/pdf" });
   }
 
-  async flagAsDelete() {
+  async prepForDeletion() {
     this.deletionFlagSetDate = new Date().toISOString();
     await this.changeState(State.TRASH);
   }

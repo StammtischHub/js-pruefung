@@ -3,10 +3,10 @@ import { ScoredValue } from "./ScoredValue.js";
 export class ClassificationResult {
   constructor(data) {
     this.kind = data.kind;
-    this.docId = new ScoredValue(data.doc_id);
-    this.docDateSic = new ScoredValue(data.doc_date_sic);
-    this.docDateParsed = new Date(data.doc_date_parsed);
-    this.docSubject = new ScoredValue(data.doc_subject);
+    this.docId = data.docId ? new ScoredValue(data.docId) : data.doc_id ? new ScoredValue(data.doc_id) : null;
+    this.docDateSic = data.docDateSic ? new ScoredValue(data.docDateSic) : data.doc_date_sic ? new ScoredValue(data.doc_date_sic) : null;
+    this.docDateParsed = new Date(data.docDateParsed);
+    this.docSubject = data.docSubject ? new ScoredValue(data.docSubject) : data.doc_subject ? new ScoredValue(data.doc_subject) : null;
   }
 
   isConfidenceSufficient() {
@@ -15,5 +15,12 @@ export class ClassificationResult {
       this.docDateSic.isScoreSufficient() &&
       this.docSubject.isScoreSufficient()
     );
+  }
+
+  updateMetadata({ kind, docId, docDateSic, docSubject }) {
+    if (kind !== undefined) this.kind = kind;
+    if (docId !== undefined) this.docId = new ScoredValue({ value: docId, score: 1 });
+    if (docDateSic !== undefined) this.docDateSic = new ScoredValue({ value: docDateSic, score: 1 });
+    if (docSubject !== undefined) this.docSubject = new ScoredValue({ value: docSubject, score: 1 });
   }
 }

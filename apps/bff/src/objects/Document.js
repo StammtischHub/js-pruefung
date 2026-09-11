@@ -12,7 +12,9 @@ export class Document {
     this.originalName = data.originalName;
     this.path = data.path;
     this.state = data.state;
-    this.classificationResult = data.classificationResult ?? null;
+    this.classificationResult = data.classificationResult
+      ? new ClassificationResult(data.classificationResult)
+      : null;
     this.classificationType = data.classificationType ?? null;
     this.editedBy = data.editedBy ?? [];
     this.deletionFlagSetDate = data.deletionFlagSetDate ?? null;
@@ -92,6 +94,17 @@ export class Document {
     await rename(this.path, targetPath);
     this.path = targetPath;
     this.state = newState;
+
+    await updateDocumentInMetadata(this);
+  }
+
+  async updateClassificationResultMetadata({
+    kind = undefined,
+    docId = undefined,
+    docDateSic = undefined,
+    docSubject = undefined,
+  }) {
+    this.classificationResult.updateMetadata({ kind, docId, docDateSic, docSubject });
 
     await updateDocumentInMetadata(this);
   }

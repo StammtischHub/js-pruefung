@@ -28,7 +28,7 @@ export const mockDocuments = [
     id: "2",
     originalName: "rechnung_11",
     path: "/app/data/processed/rechnung_11.pdf",
-    state: "PROCESSED",
+    state: "INBOX",
     classificationResult: {
       kind: "INVOICE",
       docId: {

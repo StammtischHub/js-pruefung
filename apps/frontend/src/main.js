@@ -12,30 +12,30 @@ navButtons.forEach((button) => {
   });
 });
 
-function renderView(viewName) {
+async function renderView(viewName) {
   navButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.view === viewName);
   });
 
   switch (viewName) {
     case "inbox":
-      renderInboxView(app);
+      await renderInboxView(app);
       break;
 
     case "review":
-      renderReviewView(app);
+      await renderReviewView(app);
       break;
 
     case "waiting":
-      renderWaitingView(app);
+      await renderWaitingView(app);
       break;
 
     case "trash":
-      renderTrashView(app);
+      await renderTrashView(app);
       break;
 
     default:
-      renderInboxView(app);
+      await renderInboxView(app);
   }
 }
 

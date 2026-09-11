@@ -100,4 +100,22 @@ router.post("/:id/finish", async (req, res) => {
   }
 });
 
+router.post("/:id/mark-delete", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    document.deleteFlagSetDate = new Date().toISOString();
+    await document.changeState(State.TRASH);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Marking the document to delete failed." });
+  }
+});
+
 export default router;

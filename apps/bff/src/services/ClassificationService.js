@@ -1,17 +1,16 @@
-import fsPromises from "node:fs/promises";
-import { config } from "../config.js";
-
 export default class ClassificationService {
   constructor(apiUrl) {
     this.apiUrl = apiUrl;
   }
 
-  async classifyFile(file, id) {
+  async classifyFile(document) {
+    const file = await document.toFileObject();
+
     if (!(file instanceof File) && !(file instanceof Blob)) {
       throw new Error("A PDF file must be passed");
     }
 
-    const url = this.apiUrl + id;
+    const url = this.apiUrl + document.id;
 
     try {
       const response = await fetch(url, {
@@ -31,32 +30,5 @@ export default class ClassificationService {
       console.log("Error sending PDF file", error);
       throw error;
     }
-  }
-
-  async routeFileByConfidence(file, id, assessment) {
-    try {
-      if (await this.#isConfidenceSufficient(assessment)) {
-        await fsPromises.rename(file.name, `${config.paths.processed}/${id}.pdf`);
-      } else {
-        await fsPromises.rename(file.name, `${config.paths.inbox}/${id}.pdf`);
-      }
-    } catch (error) {
-      console.log("Error routing PDF file", error);
-      throw error;
-    }
-  }
-
-  async #isConfidenceSufficient(assessment) {
-    for (const value of Object.values(assessment.result)) {
-      if (!value.score) {
-        continue;
-      }
-
-      if (value.score < 0.6) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

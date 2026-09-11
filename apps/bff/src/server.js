@@ -29,8 +29,11 @@ app.listen(config.port, () => {
   console.log(`BFF running on http://localhost:${config.port}`);
 });
 
-readerService.startObserver(async (file, id) => {
-  classificationService
-    .classifyFile(file, id)
-    .then((assessment) => classificationService.routeFileByConfidence(file, id, assessment));
+readerService.startObserver(async (document) => {
+  try {
+    const assessment = await classificationService.classifyFile(document);
+    await document.classify(assessment);
+  } catch (error) {
+    console.error(`Error processing document ${document.filename}`, error);
+  }
 });

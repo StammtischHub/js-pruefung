@@ -1,0 +1,7 @@
+export const State = {
+  INBOX: "INBOX",
+  SCANNER: "SCANNER",
+  PROCESSED: "PROCESSED",
+  WAITING: "WAITING",
+  TRASH: "TRASH",
+};

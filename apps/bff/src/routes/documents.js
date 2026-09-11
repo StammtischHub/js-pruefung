@@ -1,6 +1,9 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
-import { handleManualUpload } from "../services/documentService.js";
+import { Document } from "../objects/Document.js";
+import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
+import { State } from "../objects/types/State.js";
+import { NotFoundError } from "../objects/errors/NotFoundError.js";
 
 const router = express.Router();
 
@@ -23,12 +26,78 @@ router.post("/", (req, res) => {
     }
 
     try {
-      const document = await handleManualUpload(req.file);
+      const document = await Document.forNewFile(req.file);
       return res.status(201).json(document);
-    } catch {
+    } catch (err) {
+      console.error(err);
       return res.status(500).json({ error: "Processing failed." });
     }
   });
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const state = req.query.state;
+
+    if (!state) return res.status(400).json({ error: "No 'state' query provided." });
+
+    const metadata = await getDocumentsByState(state.toUpperCase());
+    return res.status(200).json(metadata.map((document) => document.path));
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Fetching documents failed." });
+  }
+});
+
+router.post("/:id/wait", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    await document.changeState(State.WAITING);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document back to inbox failed." });
+  }
+});
+
+router.post("/:id/continue", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    await document.changeState(State.INBOX);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document back to inbox failed." });
+  }
+});
+
+router.post("/:id/finish", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const document = await getDocumentById(id);
+
+    await document.changeState(State.PROCESSED);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Set document to processed failed." });
+  }
 });
 
 export default router;

@@ -100,4 +100,21 @@ router.post("/:id/finish", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const document = await getDocumentById(id);
+
+    await document.updateClassificationResultMetadata(req.body);
+    return res.status(200).json(document);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      console.log(err);
+      return res.status(404).json({ error: err.message });
+    }
+    console.error(err);
+    return res.status(500).json({ error: "Updating document failed." });
+  }
+});
+
 export default router;

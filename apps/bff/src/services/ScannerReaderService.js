@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import fsPromises from "node:fs/promises";
 import path from "node:path";
-import { Document } from "../objects/Document.js";
+import { Document } from "../domain/Document.js";
 
 export default class ScannerReaderService {
   constructor(directory) {

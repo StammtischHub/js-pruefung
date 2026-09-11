@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { config } from "../config.js";
-import { NotFoundError } from "../objects/errors/NotFoundError.js";
-import { Document } from "../objects/Document.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
+import { Document } from "../domain/Document.js";
 
 let queue = Promise.resolve();
 function enqueue(task) {

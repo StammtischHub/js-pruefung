@@ -35,8 +35,11 @@ router.post("/", (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const state = req.query.state.toUpperCase();
-    const metadata = await getAllMetadata(state);
+    const state = req.query.state;
+
+    if (!state) return res.status(400).json({ error: "No 'state' query provided." });
+
+    const metadata = await getAllMetadata(state.toUpperCase());
     return res
       .status(200)
       .json(

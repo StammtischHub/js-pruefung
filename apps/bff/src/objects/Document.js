@@ -7,15 +7,15 @@ import { v4 as uuid } from "uuid";
 import { ClassificationResult } from "./ClassificationResult.js";
 
 export class Document {
-  constructor({ id, originalName, path, state }) {
-    this.id = id;
-    this.originalName = originalName;
-    this.path = path;
-    this.state = state;
-    this.classificationResult = null;
-    this.classificationType = null;
-    this.editedBy = [];
-    this.deleteFlagSetDate = null;
+  constructor(data) {
+    this.id = data.id;
+    this.originalName = data.originalName;
+    this.path = data.path;
+    this.state = data.state;
+    this.classificationResult = data.classificationResult ?? null;
+    this.classificationType = data.classificationType ?? null;
+    this.editedBy = data.editedBy ?? [];
+    this.deleteFlagSetDate = data.deleteFlagSetDate ?? null;
   }
 
   static async forScannerFile(filepath) {

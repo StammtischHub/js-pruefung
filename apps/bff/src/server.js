@@ -7,7 +7,7 @@ import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
 import schedule from "node-schedule";
 import { deleteOldFiles } from "./services/DeletionService.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+import { errorHandler } from "./utils/errorHandler.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);

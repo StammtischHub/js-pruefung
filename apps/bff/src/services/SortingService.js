@@ -1,7 +1,7 @@
 import { getDocumentsByState } from "./MetadataService.js";
 import { State } from "../domain/types/State.js";
 
-export async function next() {
+export async function getNextDocument() {
   const inInbox = await getDocumentsByState(State.INBOX);
   if (inInbox.length === 0) {
     return null;

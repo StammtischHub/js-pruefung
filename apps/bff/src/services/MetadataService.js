@@ -70,7 +70,7 @@ export async function getDocumentById(id) {
     readAll().then((metadata) => {
       const document = metadata.find((doc) => doc.id === id);
       if (!document) {
-        throw new NotFoundError(`Document with ID ${id} not found`);
+        throw new NotFoundError(`Document with ID '${id}' not found`);
       }
       return new Document(document);
     })

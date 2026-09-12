@@ -8,7 +8,7 @@ const navButtons = document.querySelectorAll("#main-nav button");
 
 navButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    renderView(button.dataset.view);
+    renderView(button.dataset.view).catch(handleRenderError);
   });
 });
 
@@ -39,4 +39,9 @@ async function renderView(viewName) {
   }
 }
 
-renderView("inbox");
+function handleRenderError(error) {
+  console.error("Die Ansicht konnte nicht geladen werden:", error);
+  app.textContent = "Die Ansicht konnte nicht geladen werden. Bitte versuche es erneut.";
+}
+
+renderView("inbox").catch(handleRenderError);

@@ -9,7 +9,7 @@ async function getInboxDocuments() {
 export async function renderInboxView(app) {
   const documents = await getInboxDocuments();
 
-  const inboxDocuments = documents.filter((doc) => doc.state == "INBOX");
+  const inboxDocuments = documents.filter((doc) => doc.state === "INBOX");
 
   app.innerHTML = `
     <section class="view">

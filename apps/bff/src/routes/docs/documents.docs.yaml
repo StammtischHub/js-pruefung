@@ -1,0 +1,312 @@
+paths:
+  /documents:
+    post:
+      summary: Upload a new PDF document
+      description: Uploads a PDF file, stores it in the scanner folder and registers it in the metadata store with state SCANNER.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The PDF file to upload.
+      responses:
+        "201":
+          description: Document was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: No file was received.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: The uploaded file exceeds the allowed file size limit.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "415":
+          description: The uploaded file is not a PDF.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: Get documents by state
+      description: Returns all documents that currently have the given state.
+      tags:
+        - Documents
+      parameters:
+        - in: query
+          name: state
+          required: true
+          schema:
+            $ref: "#/components/schemas/State"
+          description: The state to filter documents by (case-insensitive).
+      responses:
+        "200":
+          description: List of documents with the given state.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "400":
+          description: No 'state' query parameter provided, or the provided state is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/next:
+    get:
+      summary: Get the next document to process
+      description: Returns the oldest document (by creationDate) currently in state INBOX, or null if there is none.
+      tags:
+        - Documents
+      responses:
+        "200":
+          description: The next document to process, or null if there is no document in state INBOX.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Document"
+                nullable: true
+
+  /documents/wait:
+    put:
+      summary: Set documents to state WAITING
+      description: Changes the state of the given documents to WAITING. Each document is processed independently; a failure on one document does not affect the others.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentIds
+              properties:
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "207":
+          description: Multi-status result, one entry per requested document ID.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionResult"
+        "400":
+          description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/continue:
+    put:
+      summary: Set documents to state INBOX
+      description: Changes the state of the given documents to INBOX. Each document is processed independently; a failure on one document does not affect the others.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentIds
+              properties:
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "207":
+          description: Multi-status result, one entry per requested document ID.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionResult"
+        "400":
+          description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/finish:
+    put:
+      summary: Set documents to state PROCESSED
+      description: Changes the state of the given documents to PROCESSED. Each document is processed independently; a failure on one document does not affect the others.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentIds
+              properties:
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "207":
+          description: Multi-status result, one entry per requested document ID.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionResult"
+        "400":
+          description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/prep-for-deletion:
+    put:
+      summary: Mark documents for deletion
+      description: Sets the deletion flag on the given documents and moves them to state TRASH. Documents already in state TRASH are left unchanged. Each document is processed independently; a failure on one document does not affect the others.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentIds
+              properties:
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "207":
+          description: Multi-status result, one entry per requested document ID.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionResult"
+        "400":
+          description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/classify:
+    post:
+      summary: Classify documents
+      description: Sends the given documents to the classification service and updates their classification result. Depending on the confidence of the result, the document is moved to state PROCESSED or INBOX. Each document is processed independently; a failure on one document does not affect the others.
+      tags:
+        - Documents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - documentIds
+              properties:
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "207":
+          description: Multi-status result, one entry per requested document ID.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BulkActionResult"
+        "400":
+          description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /documents/{id}:
+    put:
+      summary: Update the classification result metadata of a document
+      description: Updates the given classification result fields (kind, docId, docDateSic, docSubject) of the document with the given ID. Every updated value is stored with a confidence score of 1.
+      tags:
+        - Documents
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the document to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+                docId:
+                  type: string
+                docDateSic:
+                  type: string
+                docSubject:
+                  type: string
+      responses:
+        "200":
+          description: The updated document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          description: No 'id' path parameter provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No document found with the given ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

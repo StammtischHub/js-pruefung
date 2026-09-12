@@ -1,8 +1,23 @@
 import { findUp } from "find-up";
 import path from "node:path";
+import { bffAppRoot, projectRoot } from "./utils/pathHelper.js";
 
-const rootWorkspace = await findUp("pnpm-workspace.yaml");
-const projectRoot = path.dirname(rootWorkspace);
+export const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'My API',
+      version: '1.0.0',
+      description: 'API documentation',
+    },
+    servers: [
+      {
+        url: 'http://localhost:4000/api/',
+      },
+    ],
+  },
+  apis: [`${bffAppRoot}/src/routes/docs/*.yaml`],
+};
 
 export const config = {
   port: process.env.PORT || 4000,

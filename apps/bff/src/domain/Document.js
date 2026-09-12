@@ -94,6 +94,11 @@ export class Document {
       throw new Error(`Invalid state: ${newState}`);
     }
 
+    if (newState === this.state) return;
+    if (this.state === State.TRASH) {
+      this.deletionFlagSetDate = null;
+    }
+
     const targetPath = this.#getPathForState(newState);
     await rename(this.path, targetPath);
     this.path = targetPath;
@@ -118,6 +123,7 @@ export class Document {
   }
 
   async prepForDeletion() {
+    if (this.deletionFlagSetDate != null) return;
     this.deletionFlagSetDate = new Date().toISOString();
     await this.changeState(State.TRASH);
   }

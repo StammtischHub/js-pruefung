@@ -67,7 +67,8 @@ router.get("/next", async (req, res) => {
 
 router.put("/wait", async (req, res) => {
   const documentIds = req.body.documentIds;
-  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
+  if (!documentIds)
+    return res.status(400).json({ error: "No 'documentIds' key provided in body." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.WAITING);
@@ -80,7 +81,8 @@ router.put("/wait", async (req, res) => {
 
 router.put("/continue", async (req, res) => {
   const documentIds = req.body.documentIds;
-  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
+  if (!documentIds)
+    return res.status(400).json({ error: "No 'documentIds' key provided in body." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.INBOX);
@@ -93,7 +95,8 @@ router.put("/continue", async (req, res) => {
 
 router.put("/finish", async (req, res) => {
   const documentIds = req.body.documentIds;
-  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
+  if (!documentIds)
+    return res.status(400).json({ error: "No 'documentIds' key provided in body." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
@@ -106,7 +109,8 @@ router.put("/finish", async (req, res) => {
 
 router.put("/prep-for-deletion", async (req, res) => {
   const documentIds = req.body.documentIds;
-  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
+  if (!documentIds)
+    return res.status(400).json({ error: "No 'documentIds' key provided in body." });
 
   try {
     const results = await prepDocumentsForDeletion(documentIds);
@@ -119,7 +123,8 @@ router.put("/prep-for-deletion", async (req, res) => {
 
 router.post("/classify", async (req, res) => {
   const documentIds = req.body.documentIds;
-  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
+  if (!documentIds)
+    return res.status(400).json({ error: "No 'documentIds' key provided in body." });
 
   try {
     const results = await classifyDocuments(documentIds);
@@ -132,7 +137,7 @@ router.post("/classify", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
-  if (!id) return res.status(400).json({ error: "No 'id' query provided." });
+  if (!id) return res.status(400).json({ error: "No 'id' path parameter provided." });
 
   try {
     const document = await updateClassificationResultMetadataOfDocument(id, req.body);

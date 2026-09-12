@@ -94,6 +94,11 @@ export class Document {
       throw new Error(`Invalid state: ${newState}`);
     }
 
+    if (newState === this.state) return;
+    if (this.state === State.TRASH) {
+      this.deletionFlagSetDate = null;
+    }
+
     const targetPath = this.#getPathForState(newState);
     await rename(this.path, targetPath);
     this.path = targetPath;

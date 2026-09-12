@@ -1,7 +1,7 @@
 import express from "express";
 import { pdfUpload } from "../services/pdfUpload.js";
 import { Document } from "../domain/Document.js";
-import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
+import { getDocumentsByState } from "../services/MetadataService.js";
 import { State } from "../domain/types/State.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 import { next } from "../services/sortingService.js";

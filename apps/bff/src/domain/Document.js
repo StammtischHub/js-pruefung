@@ -118,6 +118,7 @@ export class Document {
   }
 
   async prepForDeletion() {
+    if (this.deletionFlagSetDate != null) return;
     this.deletionFlagSetDate = new Date().toISOString();
     await this.changeState(State.TRASH);
   }

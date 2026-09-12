@@ -5,7 +5,11 @@ import { getDocumentById, getDocumentsByState } from "../services/MetadataServic
 import { State } from "../domain/types/State.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 import { next } from "../services/sortingService.js";
-import { changeStateOfDocuments } from "../services/ChangeStateService.js";
+import {
+  changeStateOfDocuments,
+  prepDocumentsForDeletion,
+  classifyDocuments,
+} from "../services/BulkActionService.js";
 
 const router = express.Router();
 
@@ -51,6 +55,76 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/next", async (req, res) => {
+  try {
+    const document = await next();
+    return res.status(200).json(document);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Marking the document to delete failed." });
+  }
+});
+
+router.put("/wait", async (req, res) => {
+  const documentIds = req.body.documentIds;
+
+  try {
+    const results = await changeStateOfDocuments(documentIds, State.WAITING);
+    return res.status(207).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Set document state to waiting failed." });
+  }
+});
+
+router.put("/continue", async (req, res) => {
+  const documentIds = req.body.documentIds;
+
+  try {
+    const results = await changeStateOfDocuments(documentIds, State.INBOX);
+    return res.status(207).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Set document state to inbox failed." });
+  }
+});
+
+router.put("/finish", async (req, res) => {
+  const documentIds = req.body.documentIds;
+
+  try {
+    const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
+    return res.status(207).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Set document state to processed failed." });
+  }
+});
+
+router.put("/prep-for-deletion", async (req, res) => {
+  const documentIds = req.body.documentIds;
+
+  try {
+    const results = await prepDocumentsForDeletion(documentIds);
+    return res.status(207).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Marking the document to delete failed." });
+  }
+});
+
+router.post("/classify", async (req, res) => {
+  const documentIds = req.body.documentIds;
+
+  try {
+    const results = await classifyDocuments(documentIds);
+    return res.status(207).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Updating document failed." });
+  }
+});
+
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -65,96 +139,6 @@ router.put("/:id", async (req, res) => {
     }
     console.error(err);
     return res.status(500).json({ error: "Updating document failed." });
-  }
-});
-
-router.post("/wait", async (req, res) => {
-  try {
-    const documentIds = req.body.documentIds;
-
-    const results = await changeStateOfDocuments(documentIds, State.WAITING);
-    return res.status(207).json(results);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Set document state to waiting failed." });
-  }
-});
-
-router.post("/:id/continue", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
-
-    await document.changeState(State.INBOX);
-    return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Set document back to inbox failed." });
-  }
-});
-
-router.post("/:id/finish", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
-
-    await document.changeState(State.PROCESSED);
-    return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Set document to processed failed." });
-  }
-});
-
-router.post("/:id/prep-for-deletion", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
-
-    await document.prepForDeletion();
-    return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Marking the document to delete failed." });
-  }
-});
-
-router.put("/:id/classify", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const document = await getDocumentById(id);
-
-    await document.classify();
-    return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Updating document failed." });
-  }
-});
-
-router.get("/next", async (req, res) => {
-  try {
-    const document = await next();
-    return res.status(200).json(document);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Marking the document to delete failed." });
   }
 });
 

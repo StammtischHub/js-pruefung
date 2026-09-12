@@ -83,4 +83,21 @@ export function renderDocumentDetails(app, doc, onBack) {
   `;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
+
+  document.getElementById("edit-document").addEventListener("click", () => {
+    renderDocumentEditDialog(doc, async (changes) => {
+      // Simulating error
+      if (changes.docSubject === "FEHLER") {
+        throw new Error("Fehler beim Speichern der Metadaten!");
+      }
+      doc.category = changes.category;
+      doc.docId.value = changes.docId;
+      doc.docDate.value = changes.docDate;
+      doc.docSubject.value = changes.docSubject;
+
+      renderDocumentDetails(app, doc, onBack);
+
+      document.getElementById("save-message").textContent = "Metadaten erfolgreich gespeichert!";
+    });
+  });
 }

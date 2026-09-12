@@ -5,6 +5,7 @@ import { getDocumentById, getDocumentsByState } from "../services/MetadataServic
 import { State } from "../domain/types/State.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 import { next } from "../services/sortingService.js";
+import { changeStateOfDocuments } from "../services/ChangeStateService.js";
 
 const router = express.Router();
 
@@ -42,8 +43,8 @@ router.get("/", async (req, res) => {
 
     if (!state) return res.status(400).json({ error: "No 'state' query provided." });
 
-    const metadata = await getDocumentsByState(state.toUpperCase());
-    return res.status(200).json(metadata.map((document) => document.path));
+    const documents = await getDocumentsByState(state.toUpperCase());
+    return res.status(200).json(documents);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Fetching documents failed." });
@@ -67,20 +68,15 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post("/:id/wait", async (req, res) => {
+router.post("/wait", async (req, res) => {
   try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
+    const documentIds = req.body.documentIds;
 
-    await document.changeState(State.WAITING);
-    return res.status(200).json(document);
+    const results = await changeStateOfDocuments(documentIds, State.WAITING);
+    return res.status(207).json(results);
   } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
     console.error(err);
-    return res.status(500).json({ error: "Set document back to inbox failed." });
+    return res.status(500).json({ error: "Set document state to waiting failed." });
   }
 });
 

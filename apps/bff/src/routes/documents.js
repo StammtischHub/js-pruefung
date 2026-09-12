@@ -10,6 +10,7 @@ import {
   prepDocumentsForDeletion,
   classifyDocuments,
 } from "../services/BulkActionService.js";
+import { updateClassificationResultMetadataOfDocument } from "../services/ClassificationService.js";
 
 const router = express.Router();
 
@@ -42,11 +43,10 @@ router.post("/", (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+  const state = req.query.state;
+  if (!state) return res.status(400).json({ error: "No 'state' query provided." });
+
   try {
-    const state = req.query.state;
-
-    if (!state) return res.status(400).json({ error: "No 'state' query provided." });
-
     const documents = await getDocumentsByState(state.toUpperCase());
     return res.status(200).json(documents);
   } catch (err) {
@@ -61,12 +61,13 @@ router.get("/next", async (req, res) => {
     return res.status(200).json(document);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Marking the document to delete failed." });
+    return res.status(500).json({ error: "Fetching the next document failed." });
   }
 });
 
 router.put("/wait", async (req, res) => {
   const documentIds = req.body.documentIds;
+  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.WAITING);
@@ -79,6 +80,7 @@ router.put("/wait", async (req, res) => {
 
 router.put("/continue", async (req, res) => {
   const documentIds = req.body.documentIds;
+  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.INBOX);
@@ -91,6 +93,7 @@ router.put("/continue", async (req, res) => {
 
 router.put("/finish", async (req, res) => {
   const documentIds = req.body.documentIds;
+  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
 
   try {
     const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
@@ -103,6 +106,7 @@ router.put("/finish", async (req, res) => {
 
 router.put("/prep-for-deletion", async (req, res) => {
   const documentIds = req.body.documentIds;
+  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
 
   try {
     const results = await prepDocumentsForDeletion(documentIds);
@@ -115,6 +119,7 @@ router.put("/prep-for-deletion", async (req, res) => {
 
 router.post("/classify", async (req, res) => {
   const documentIds = req.body.documentIds;
+  if (!documentIds) return res.status(400).json({ error: "No 'documentIds' query provided." });
 
   try {
     const results = await classifyDocuments(documentIds);
@@ -126,11 +131,11 @@ router.post("/classify", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const document = await getDocumentById(id);
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ error: "No 'id' query provided." });
 
-    await document.updateClassificationResultMetadata(req.body);
+  try {
+    const document = await updateClassificationResultMetadataOfDocument(id, req.body);
     return res.status(200).json(document);
   } catch (err) {
     if (err instanceof NotFoundError) {

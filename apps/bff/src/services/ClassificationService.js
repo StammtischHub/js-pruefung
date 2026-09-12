@@ -1,4 +1,5 @@
 import { config } from "../config.js";
+import {getDocumentById} from "./MetadataService.js";
 
 export async function classifyDocument(document) {
   const file = await document.toFileObject();
@@ -27,4 +28,10 @@ export async function classifyDocument(document) {
     console.error("Error sending PDF file", error);
     throw error;
   }
+}
+
+export async function updateClassificationResultMetadataOfDocument(documentId, metadata){
+  const document = await getDocumentById(documentId);
+  await document.updateClassificationResultMetadata(metadata);
+  return document;
 }

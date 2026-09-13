@@ -1,9 +1,9 @@
-import { mockDocuments } from "../mocks/mockDocuments.js";
+import { api } from "../api.js";
 import { renderDocumentDetails } from "../components/DocumentDetails.js";
 import { createConfidenceView } from "../components/ConfidenceView.js";
 
 async function getInboxDocuments() {
-  return mockDocuments;
+  return api.getDocuments("INBOX");
 }
 
 export async function renderInboxView(app) {
@@ -51,18 +51,23 @@ export async function renderInboxView(app) {
     row.dataset.id = doc.id;
 
     row.innerHTML = `
-      <td>${doc.originalName}</td>
-      <td>${doc.state}</td>
-      <td>${doc.classificationResult.kind}</td>
+      <td></td>
+      <td></td>
+      <td></td>
       <td>${createConfidenceView(
         Math.min(
-          doc.classificationResult.docId.score,
-          doc.classificationResult.docDateSic.score,
-          doc.classificationResult.docSubject.score
+          doc.classificationResult?.docId?.score ?? 0,
+          doc.classificationResult?.docDateSic?.score ?? 0,
+          doc.classificationResult?.docSubject?.score ?? 0
         )
       )}</td>
-      <td>${doc.classificationType}</td>
+      <td></td>
     `;
+
+    row.cells[0].textContent = doc.originalName;
+    row.cells[1].textContent = doc.state;
+    row.cells[2].textContent = doc.classificationResult?.kind ?? "–";
+    row.cells[4].textContent = doc.classificationType ?? "–";
 
     row.addEventListener("click", () => {
       renderDocumentDetails(app, doc, () => {

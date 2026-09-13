@@ -13,6 +13,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
   padding: 1rem 1.5rem;
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
@@ -23,8 +25,19 @@ h1 {
   margin: 0;
 }
 
-#main-nav button {
-  margin-left: 0.5rem;
+.header-actions,
+#main-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.header-actions {
+  margin-left: auto;
+}
+
+.button {
   padding: 0.5rem 1rem;
   border: 1px solid #d0d0d0;
   border-radius: 6px;
@@ -32,8 +45,13 @@ h1 {
   cursor: pointer;
 }
 
-#main-nav button:hover {
+.button:not(:disabled):hover {
   background: #f0f0f0;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
 #main-nav button.active {
@@ -137,4 +155,8 @@ main {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+#upload-status {
+  margin: 1rem 1.5rem 0;
 }

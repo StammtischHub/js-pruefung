@@ -60,7 +60,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <p>
         <strong>Dokumentdatum:</strong>
-        <span>${doc.classification.docDateSic.value}</span>
+        <span id="document-date-value"></span>
       </p>
 
       <div class="confidence-row">
@@ -71,7 +71,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
      <p>
         <strong>Betreff:</strong>
-        <span>${doc.classification.docSubject.value}</span>
+        <span id="document-subject-value"></span>
       </p>
 
       <div class="confidence-row">
@@ -86,6 +86,9 @@ export function renderDocumentDetails(app, doc, onBack) {
       </button>
     </section>
   `;
+  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
+  document.getElementById("document-subject-value").textContent =
+    doc.classification.docSubject.value;
   document.getElementById("document-id-value").textContent = doc.classification.docId.value;
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
 

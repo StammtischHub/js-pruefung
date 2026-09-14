@@ -59,7 +59,7 @@ Es gibt zwei Teile, die unabhängig voneinander laufen müssen:
 
 ### Übersicht der REST-API-Endpunkte
 
-Wenn man das BFF gestartet hat, lässt sich eine Open-API Übersicht der verfügbaren Endpunkte über `http://localhost:4000/` aufrufen.
+Wenn man das BFF gestartet hat, lässt sich eine Open-API Übersicht der verfügbaren Endpunkte über http://localhost:4000/ aufrufen.
 
 ## Konfiguration
 

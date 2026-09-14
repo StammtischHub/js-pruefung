@@ -21,12 +21,12 @@ function ensureFolders() {
   });
 }
 
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/health", healthRouter);
 app.use("/api/documents", documentsRouter);
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(errorHandler);
 

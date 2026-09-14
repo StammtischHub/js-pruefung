@@ -1,4 +1,5 @@
 import { ScoredValue } from "./ScoredValue.js";
+import { AppError } from "../AppError.js";
 
 export class ClassificationResult {
   constructor(data) {
@@ -7,18 +8,18 @@ export class ClassificationResult {
       ? new ScoredValue(data.docId)
       : data.doc_id
         ? new ScoredValue(data.doc_id)
-        : null;
+        : throw new AppError("docId or doc_id is required");
     this.docDateSic = data.docDateSic
       ? new ScoredValue(data.docDateSic)
       : data.doc_date_sic
         ? new ScoredValue(data.doc_date_sic)
-        : null;
+        : throw new AppError("docDateSic or doc_date_sic is required");
     this.docDateParsed = new Date(data.docDateParsed);
     this.docSubject = data.docSubject
       ? new ScoredValue(data.docSubject)
       : data.doc_subject
         ? new ScoredValue(data.doc_subject)
-        : null;
+        : throw new AppError("docSubject or doc_subject is required");
   }
 
   isConfidenceSufficient() {

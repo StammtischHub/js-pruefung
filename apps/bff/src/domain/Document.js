@@ -6,6 +6,7 @@ import { ClassificationType } from "./types/ClassificationType.js";
 import { v4 as uuid } from "uuid";
 import { ClassificationResult } from "./ClassificationResult.js";
 import { classifyDocument } from "../services/ClassificationService.js";
+import { AppError } from "../errors/AppError.js";
 
 export class Document {
   constructor(data) {
@@ -69,7 +70,7 @@ export class Document {
       case State.TRASH:
         return `${config.paths.trash}/${this.id}.pdf`;
       default:
-        throw new Error(`Invalid state: ${state}`);
+        throw new AppError(`Invalid state: ${state}`, 400);
     }
   }
 
@@ -91,7 +92,7 @@ export class Document {
 
   async changeState(newState) {
     if (!Object.values(State).includes(newState)) {
-      throw new Error(`Invalid state: ${newState}`);
+      throw new AppError(`Invalid state: ${newState}`, 400);
     }
 
     if (newState === this.state) return;

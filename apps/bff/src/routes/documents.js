@@ -8,7 +8,7 @@ import {
   prepDocumentsForDeletion,
   classifyDocuments,
 } from "../services/BulkActionService.js";
-import { updateClassificationResultMetadataOfDocument } from "../services/ClassificationService.js";
+import { updateClassificationResultMetadata } from "../services/ClassificationService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../errors/AppError.js";
 import { pdfUpload } from "../services/UploadService.js";
@@ -112,7 +112,7 @@ router.put(
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "No 'id' path parameter provided." });
 
-    const document = await updateClassificationResultMetadataOfDocument(id, req.body);
+    const document = await updateClassificationResultMetadata(id, req.body);
     return res.status(200).json(document);
   })
 );

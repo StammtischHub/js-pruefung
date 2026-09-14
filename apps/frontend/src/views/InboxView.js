@@ -56,7 +56,7 @@ export async function renderInboxView(app) {
       <td></td>
       <td>${createConfidenceView(
         Math.min(
-          doc.classificattion?.docId?.score ?? 0,
+          doc.classification?.docId?.score ?? 0,
           doc.classification?.docDateSic?.score ?? 0,
           doc.classification?.docSubject?.score ?? 0
         )

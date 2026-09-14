@@ -1,18 +1,17 @@
-import { findUp } from "find-up";
 import path from "node:path";
 import { bffAppRoot, projectRoot } from "./utils/pathHelper.js";
 
 export const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Intelligentes Postfach – API',
-      version: '1.0.0',
-      description: 'API Dokumentation',
+      title: "Intelligentes Postfach – API",
+      version: "1.0.0",
+      description: "API Dokumentation",
     },
     servers: [
       {
-        url: 'http://localhost:4000/api/',
+        url: "http://localhost:4000/api/",
       },
     ],
   },

@@ -10,7 +10,6 @@ import { deleteOldFiles } from "./services/DeletionService.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import { bffAppRoot } from "./utils/pathHelper.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
@@ -22,7 +21,7 @@ function ensureFolders() {
   });
 }
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(cors());
 app.use(express.json());
 

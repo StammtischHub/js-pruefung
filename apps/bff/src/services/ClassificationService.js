@@ -1,6 +1,5 @@
 import { config } from "../config.js";
 import { getDocumentById } from "./MetadataService.js";
-import { AppError } from "../errors/AppError.js";
 import { InvalidFileTypeError } from "../errors/UploadErrors.js";
 
 export async function classifyDocument(document) {

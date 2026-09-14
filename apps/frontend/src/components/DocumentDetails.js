@@ -49,7 +49,7 @@ export function renderDocumentDetails(app, doc, onBack) {
       <h3>Erkannte Metadaten</h3>
       <p>
         <strong>Dokument-ID:</strong>
-        <span>${doc.classification.docId.value}</span>
+        <span id="document-id-value"></span>
       </p>
 
       <div class="confidence-row">
@@ -86,7 +86,7 @@ export function renderDocumentDetails(app, doc, onBack) {
       </button>
     </section>
   `;
-
+  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
 
   document.getElementById("edit-document").addEventListener("click", () => {

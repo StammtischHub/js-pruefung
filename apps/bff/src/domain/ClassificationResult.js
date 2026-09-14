@@ -8,18 +8,18 @@ export class ClassificationResult {
       ? new ScoredValue(data.docId)
       : data.doc_id
         ? new ScoredValue(data.doc_id)
-        : throw new AppError("docId or doc_id is required");
+        : throw new AppError("docId or doc_id is required", 400);
     this.docDateSic = data.docDateSic
       ? new ScoredValue(data.docDateSic)
       : data.doc_date_sic
         ? new ScoredValue(data.doc_date_sic)
-        : throw new AppError("docDateSic or doc_date_sic is required");
+        : throw new AppError("docDateSic or doc_date_sic is required", 400);
     this.docDateParsed = new Date(data.docDateParsed);
     this.docSubject = data.docSubject
       ? new ScoredValue(data.docSubject)
       : data.doc_subject
         ? new ScoredValue(data.doc_subject)
-        : throw new AppError("docSubject or doc_subject is required");
+        : throw new AppError("docSubject or doc_subject is required", 400);
   }
 
   isConfidenceSufficient() {

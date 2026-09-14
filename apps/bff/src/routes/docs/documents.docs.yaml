@@ -43,6 +43,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
     get:
       summary: Get documents by state
@@ -71,6 +77,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /documents/next:
     get:
@@ -87,6 +99,12 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Document"
                 nullable: true
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /documents/wait:
     put:
@@ -118,6 +136,12 @@ paths:
                   $ref: "#/components/schemas/BulkActionResult"
         "400":
           description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
           content:
             application/json:
               schema:
@@ -157,6 +181,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /documents/finish:
     put:
@@ -192,10 +222,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /documents/prep-for-deletion:
     put:
-      summary: Mark documents for deletion
+      summary: Prepare documents for deletion
       description: Sets the deletion flag on the given documents and moves them to state TRASH. Documents already in state TRASH are left unchanged. Each document is processed independently; a failure on one document does not affect the others.
       tags:
         - Documents
@@ -223,6 +259,12 @@ paths:
                   $ref: "#/components/schemas/BulkActionResult"
         "400":
           description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
           content:
             application/json:
               schema:
@@ -258,6 +300,12 @@ paths:
                   $ref: "#/components/schemas/BulkActionResult"
         "400":
           description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
           content:
             application/json:
               schema:
@@ -306,6 +354,12 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: No document found with the given ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
           content:
             application/json:
               schema:

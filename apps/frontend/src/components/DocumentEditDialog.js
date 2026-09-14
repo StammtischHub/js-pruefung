@@ -10,8 +10,9 @@ export function renderDocumentEditDialog(doc, onSave) {
             </label>
             <select id="edit-category" required>
                 <option value="INVOICE">Rechnung</option>
-                <option value="BANK_STATEMENT">Kontoauszug</option>
-                <option value="OTHER">Sonstiges</option>
+                <option value="STATEMENT">Kontoauszug</option>
+                <option value="LETTER">Brief</option>
+                <option value="UNKNOWN">Unbekannt</option>
             </select>
 
             <label for="edit-doc-id">
@@ -22,7 +23,7 @@ export function renderDocumentEditDialog(doc, onSave) {
             <label for="edit-doc-date">
             Dokumentdatum
             </label>
-            <input id="edit-doc-date" type="date" required />
+            <input id="edit-doc-date" type="text" required />
 
             <label for="edit-doc-subject">
             Betreff
@@ -52,10 +53,10 @@ export function renderDocumentEditDialog(doc, onSave) {
   const saveButton = document.getElementById("save-document");
   const message = document.getElementById("edit-message");
 
-  categoryInput.value = doc.category;
-  docIdInput.value = doc.docId.value;
-  docDateInput.value = doc.docDate.value;
-  docSubjectInput.value = doc.docSubject.value;
+  categoryInput.value = doc.classification.kind;
+  docIdInput.value = doc.classification.docId.value;
+  docDateInput.value = doc.classification.docDateSic.value;
+  docSubjectInput.value = doc.classification.docSubject.value;
 
   cancelButton.addEventListener("click", () => {
     dialog.close();
@@ -69,9 +70,9 @@ export function renderDocumentEditDialog(doc, onSave) {
     event.preventDefault();
 
     const changes = {
-      category: categoryInput.value,
+      kind: categoryInput.value,
       docId: docIdInput.value.trim(),
-      docDate: docDateInput.value,
+      docDateSic: docDateInput.value.trim(),
       docSubject: docSubjectInput.value.trim(),
     };
 

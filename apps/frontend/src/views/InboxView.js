@@ -56,9 +56,9 @@ export async function renderInboxView(app) {
       <td></td>
       <td>${createConfidenceView(
         Math.min(
-          doc.classificationResult?.docId?.score ?? 0,
-          doc.classificationResult?.docDateSic?.score ?? 0,
-          doc.classificationResult?.docSubject?.score ?? 0
+          doc.classificattion?.docId?.score ?? 0,
+          doc.classification?.docDateSic?.score ?? 0,
+          doc.classification?.docSubject?.score ?? 0
         )
       )}</td>
       <td></td>
@@ -66,8 +66,8 @@ export async function renderInboxView(app) {
 
     row.cells[0].textContent = doc.originalName;
     row.cells[1].textContent = doc.state;
-    row.cells[2].textContent = doc.classificationResult?.kind ?? "–";
-    row.cells[4].textContent = doc.classificationType ?? "–";
+    row.cells[2].textContent = doc.classification?.kind ?? "–";
+    row.cells[4].textContent = doc.classification?.type ?? "–";
 
     row.addEventListener("click", () => {
       renderDocumentDetails(app, doc, () => {

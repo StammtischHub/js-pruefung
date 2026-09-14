@@ -1,4 +1,4 @@
-import { createConfidenceView } from "../components/ConfidenceView.js";
+import { createConfidenceView } from "./ConfidenceView.js";
 
 export function renderDocumentDetails(app, doc, onBack) {
   app.innerHTML = `

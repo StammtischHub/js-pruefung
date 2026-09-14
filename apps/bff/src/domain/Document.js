@@ -42,7 +42,7 @@ export class Document {
     const id = uuid();
     const document = new Document({
       id: id,
-      originalName: file.name,
+      originalName: file.originalname,
       path: null,
       state: State.SCANNER,
     });

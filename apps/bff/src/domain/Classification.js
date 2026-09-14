@@ -1,7 +1,8 @@
 import { ScoredValue } from "./ScoredValue.js";
 import { AppError } from "../errors/AppError.js";
+import { ClassificationType } from "./types/ClassificationType.js";
 
-export class ClassificationResult {
+export class Classification {
   throwErrorForUnsatisfiedData(message) {
     throw new AppError(message, 400);
   }
@@ -24,6 +25,11 @@ export class ClassificationResult {
       : data.doc_subject
         ? new ScoredValue(data.doc_subject)
         : this.throwErrorForUnsatisfiedData("docSubject or doc_subject is required", 400);
+    this.type = data.type;
+  }
+
+  #areAllScoredValuesCorrected() {
+    return this.docId.isCorrected && this.docDateSic.isCorrected && this.docSubject.isCorrected;
   }
 
   isConfidenceSufficient() {
@@ -34,12 +40,18 @@ export class ClassificationResult {
     );
   }
 
-  updateMetadata({ kind, docId, docDateSic, docSubject }) {
-    if (kind !== undefined) this.kind = kind;
-    if (docId !== undefined) this.docId = new ScoredValue({ value: docId, score: 1 });
-    if (docDateSic !== undefined)
-      this.docDateSic = new ScoredValue({ value: docDateSic, score: 1 });
-    if (docSubject !== undefined)
-      this.docSubject = new ScoredValue({ value: docSubject, score: 1 });
+  updateMetadata(data) {
+    if (data.kind) this.kind = data.kind;
+    if (data.docId)
+      this.docId = new ScoredValue({ value: data.docId, score: 1, isCorrected: true });
+    if (data.docDateSic) {
+      this.docDateSic = new ScoredValue({ value: data.docDateSic, score: 1, isCorrected: true });
+      this.docDateParsed = new Date(data.docDateSic);
+    }
+    if (data.docSubject)
+      this.docSubject = new ScoredValue({ value: data.docSubject, score: 1, isCorrected: true });
+
+    if (this.#areAllScoredValuesCorrected() && data.kind) this.type = ClassificationType.MANUAL;
+    else this.type = ClassificationType.CORRECTED;
   }
 }

@@ -31,8 +31,8 @@ export async function classifyDocument(document) {
   }
 }
 
-export async function updateClassificationResultMetadata(documentId, metadata) {
+export async function updateClassificationMetadata(documentId, metadata = {}) {
   const document = await getDocumentById(documentId);
-  await document.updateClassificationResultMetadata(metadata);
+  if (Object.keys(metadata).length !== 0) await document.updateClassificationMetadata(metadata);
   return document;
 }

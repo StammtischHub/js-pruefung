@@ -18,8 +18,11 @@ components:
           type: number
           format: float
           description: Confidence score of the extracted value.
+        isCorrected:
+          type: boolean
+          description: Whether the value is manually corrected.
 
-    ClassificationResult:
+    Classification:
       type: object
       properties:
         kind:
@@ -33,9 +36,13 @@ components:
         docDateParsed:
           type: string
           format: date-time
+          nullable: true
         docSubject:
           allOf:
             - $ref: "#/components/schemas/ScoredValue"
+        type:
+          allOf:
+            - $ref: "#/components/schemas/ClassificationType"
 
     Document:
       type: object
@@ -52,13 +59,9 @@ components:
         creationDate:
           type: string
           format: date-time
-        classificationResult:
+        classification:
           allOf:
-            - $ref: "#/components/schemas/ClassificationResult"
-          nullable: true
-        classificationType:
-          allOf:
-            - $ref: "#/components/schemas/ClassificationType"
+            - $ref: "#/components/schemas/Classification"
           nullable: true
         editedBy:
           type: array

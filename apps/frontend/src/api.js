@@ -20,6 +20,6 @@ export const api = {
     const body = new FormData();
     body.append("file", file);
 
-    return request("/documents/upload", { method: "POST", headers: {}, body });
+    return request("/documents/", { method: "POST", headers: {}, body });
   },
 };

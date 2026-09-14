@@ -1,0 +1,43 @@
+paths:
+  /identify:
+    post:
+      summary: Sign In with username
+      description: Returns a cookie with the specified username to track all user activity throughout the app.
+      tags:
+        - Identification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+      responses:
+        "302":
+          description: Cookie set successfully. Rerouting to specified redirect-url or root-url.
+          headers:
+            Set-Cookies:
+              description: Signed http only cookie containing the username
+              schema:
+                type: string
+            Location:
+              description: The target URL
+              schema:
+                type: string
+        "400":
+          description: No username provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No username provided
+                  statusCode:
+                    type: integer
+                    example: 400

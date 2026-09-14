@@ -70,3 +70,11 @@ export function classifyDocuments(documentIds) {
     "Classifying document failed."
   );
 }
+
+export function addEditorToDocument(documentsIds, username) {
+  return processDocuments(
+    documentsIds,
+    (document) => document.addEditor(username),
+    "Adding editor to document failed"
+  );
+}

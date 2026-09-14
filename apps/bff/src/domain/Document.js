@@ -4,7 +4,9 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import { addDocumentToMetadata, updateDocumentInMetadata } from "../services/MetadataService.js";
 import { ClassificationType } from "./types/ClassificationType.js";
 import { v4 as uuid } from "uuid";
-import { ClassificationResult } from "./ClassificationResult.js";
+import { Classification } from "./Classification.js";
+import { classifyDocument } from "../services/ClassificationService.js";
+import { AppError } from "../errors/AppError.js";
 
 export class Document {
   constructor(data) {
@@ -12,10 +14,10 @@ export class Document {
     this.originalName = data.originalName;
     this.path = data.path;
     this.state = data.state;
-    this.classificationResult = data.classificationResult ?? null;
-    this.classificationType = data.classificationType ?? null;
+    this.creationDate = new Date().toISOString();
+    this.classification = data.classification ? new Classification(data.classification) : null;
     this.editedBy = data.editedBy ?? [];
-    this.deleteFlagSetDate = data.deleteFlagSetDate ?? null;
+    this.deletionFlagSetDate = data.deletionFlagSetDate ?? null;
   }
 
   static async forScannerFile(filepath) {
@@ -40,7 +42,7 @@ export class Document {
     const id = uuid();
     const document = new Document({
       id: id,
-      originalName: file.name,
+      originalName: file.originalname,
       path: null,
       state: State.SCANNER,
     });
@@ -65,7 +67,7 @@ export class Document {
       case State.TRASH:
         return `${config.paths.trash}/${this.id}.pdf`;
       default:
-        throw new Error(`Invalid state: ${state}`);
+        throw new AppError(`Invalid state: ${state}`, 400);
     }
   }
 
@@ -73,10 +75,14 @@ export class Document {
     this.editedBy.push(editor);
   }
 
-  async classify(assessment) {
-    this.classificationResult = new ClassificationResult(assessment.result);
-    this.classificationType = ClassificationType.AUTO;
-    if (this.classificationResult.isConfidenceSufficient()) {
+  async classify() {
+    const assessment = await classifyDocument(this);
+
+    this.classification = new Classification({
+      ...assessment.result,
+      type: ClassificationType.AUTO,
+    });
+    if (this.classification.isConfidenceSufficient()) {
       await this.changeState(State.PROCESSED);
     } else {
       await this.changeState(State.INBOX);
@@ -85,7 +91,12 @@ export class Document {
 
   async changeState(newState) {
     if (!Object.values(State).includes(newState)) {
-      throw new Error(`Invalid state: ${newState}`);
+      throw new AppError(`Invalid state: ${newState}`, 400);
+    }
+
+    if (newState === this.state) return;
+    if (this.state === State.TRASH) {
+      this.deletionFlagSetDate = null;
     }
 
     const targetPath = this.#getPathForState(newState);
@@ -96,7 +107,19 @@ export class Document {
     await updateDocumentInMetadata(this);
   }
 
+  async updateClassificationMetadata(data) {
+    this.classification.updateMetadata(data);
+
+    await updateDocumentInMetadata(this);
+  }
+
   async toFileObject() {
     return new File([await readFile(this.path)], this.path, { type: "application/pdf" });
+  }
+
+  async prepForDeletion() {
+    if (this.deletionFlagSetDate != null) return;
+    this.deletionFlagSetDate = new Date().toISOString();
+    await this.changeState(State.TRASH);
   }
 }

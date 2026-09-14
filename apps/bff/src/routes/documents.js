@@ -1,103 +1,125 @@
 import express from "express";
-import { pdfUpload } from "../services/pdfUpload.js";
-import { Document } from "../objects/Document.js";
-import { getDocumentById, getDocumentsByState } from "../services/MetadataService.js";
-import { State } from "../objects/types/State.js";
-import { NotFoundError } from "../objects/errors/NotFoundError.js";
+import { Document } from "../domain/Document.js";
+import { getDocumentsByState } from "../services/MetadataService.js";
+import { State } from "../domain/types/State.js";
+import { getNextDocument } from "../services/SortingService.js";
+import {
+  changeStateOfDocuments,
+  prepDocumentsForDeletion,
+  classifyDocuments,
+} from "../services/BulkActionService.js";
+import { updateClassificationMetadata } from "../services/ClassificationService.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { AppError } from "../errors/AppError.js";
+import { pdfUpload } from "../services/UploadService.js";
+import { getUnknownMetadataFields } from "../utils/MetadataFields.js";
 
 const router = express.Router();
 
-router.post("/", (req, res) => {
-  pdfUpload(req, res, async (err) => {
-    if (err) {
-      const errors = {
-        LIMIT_FILE_SIZE: { status: 413, msg: "File to big to handle." },
-        INVALID_FILE_TYPE: { status: 415, msg: "Only PDF-Files allowed." },
-      };
-
-      const known = errors[err.code];
-      return known
-        ? res.status(known.status).json({ error: known.msg })
-        : res.status(400).json({ error: "Upload failed." });
-    }
+router.post(
+  "/",
+  asyncHandler(async (req, res) => {
+    await pdfUpload(req, res);
 
     if (!req.file) {
-      return res.status(400).json({ error: "No file received." });
+      throw new AppError("No file received.", 400);
     }
 
-    try {
-      const document = await Document.forNewFile(req.file);
-      return res.status(201).json(document);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Processing failed." });
-    }
-  });
-});
+    const document = await Document.forNewFile(req.file);
+    return res.status(201).json(document);
+  })
+);
 
-router.get("/", async (req, res) => {
-  try {
-    const state = req.query.state;
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const stateQuery = req.query.state;
+    if (!stateQuery) throw new AppError("No 'state' query provided.", 400);
 
-    if (!state) return res.status(400).json({ error: "No 'state' query provided." });
+    const state = stateQuery.toUpperCase();
+    if (!State[state]) throw new AppError("Invalid 'state' query provided.", 400);
 
-    const metadata = await getDocumentsByState(state.toUpperCase());
-    return res.status(200).json(metadata.map((document) => document.path));
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Fetching documents failed." });
-  }
-});
+    const documents = await getDocumentsByState(state);
+    return res.status(200).json(documents);
+  })
+);
 
-router.post("/:id/wait", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
-
-    await document.changeState(State.WAITING);
+router.get(
+  "/next",
+  asyncHandler(async (req, res) => {
+    const document = await getNextDocument();
     return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Set document back to inbox failed." });
-  }
-});
+  })
+);
 
-router.post("/:id/continue", async (req, res) => {
-  try {
+router.put(
+  "/wait",
+  asyncHandler(async (req, res) => {
+    const documentIds = req.body.documentIds;
+    if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
+
+    const results = await changeStateOfDocuments(documentIds, State.WAITING);
+    return res.status(207).json(results);
+  })
+);
+
+router.put(
+  "/continue",
+  asyncHandler(async (req, res) => {
+    const documentIds = req.body.documentIds;
+    if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
+
+    const results = await changeStateOfDocuments(documentIds, State.INBOX);
+    return res.status(207).json(results);
+  })
+);
+
+router.put(
+  "/finish",
+  asyncHandler(async (req, res) => {
+    const documentIds = req.body.documentIds;
+    if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
+
+    const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
+    return res.status(207).json(results);
+  })
+);
+
+router.put(
+  "/prep-for-deletion",
+  asyncHandler(async (req, res) => {
+    const documentIds = req.body.documentIds;
+    if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
+
+    const results = await prepDocumentsForDeletion(documentIds);
+    return res.status(207).json(results);
+  })
+);
+
+router.post(
+  "/classify",
+  asyncHandler(async (req, res) => {
+    const documentIds = req.body.documentIds;
+    if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
+
+    const results = await classifyDocuments(documentIds);
+    return res.status(207).json(results);
+  })
+);
+
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
     const id = req.params.id;
-    const document = await getDocumentById(id);
+    if (!id) return res.status(400).json({ error: "No 'id' path parameter provided." });
 
-    await document.changeState(State.INBOX);
+    const unknownFields = getUnknownMetadataFields(req.body);
+    if (unknownFields.length > 0)
+      throw new AppError(`Unknown fields provided in body: ${unknownFields.join(", ")}`, 400);
+
+    const document = await updateClassificationMetadata(id, req.body);
     return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Set document back to inbox failed." });
-  }
-});
-
-router.post("/:id/finish", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const document = await getDocumentById(id);
-
-    await document.changeState(State.PROCESSED);
-    return res.status(200).json(document);
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      console.log(err);
-      return res.status(404).json({ error: err.message });
-    }
-    console.error(err);
-    return res.status(500).json({ error: "Set document to processed failed." });
-  }
-});
+  })
+);
 
 export default router;

@@ -30,6 +30,8 @@ Die Anwendung kann inklusive der benötigten Mock-Services vollständig über Do
 Im Projekt-Root:
 
 ```sh
+docker compose up --build -d
+# oder (wenn der Code sich nicht geändert hat und nicht neu gebaut werden muss):
 docker compose up -d
 ```
 
@@ -54,6 +56,10 @@ Es gibt zwei Teile, die unabhängig voneinander laufen müssen:
 > ```shell
 > docker compose up -d scanner-mock pdfclassifier-api-mock
 > ```
+
+### Übersicht der REST-API-Endpunkte
+
+Wenn man das BFF gestartet hat, lässt sich eine Open-API Übersicht der verfügbaren Endpunkte über http://localhost:4000/ aufrufen.
 
 ## Konfiguration
 
@@ -109,7 +115,7 @@ pnpm format:check  # prüft nur, ob alles korrekt formatiert ist, ohne etwas zu 
 Der Ordner `data/` bildet die Zustände ab, die ein Dokument im System durchläuft:
 
 - `scanner` – Eingang der (simulierten) Scanner-Straße
-- `inbox` – neue, noch nicht klassifizierte bzw. gesichtete Dokumente
+- `inbox` – Dokumente, die eine zu niedrige Klassifizierung erhalten haben durch den Klassifizierung-Service und manuell gesichtet werden müssen
 - `waiting` – Dokumente in Warteposition, z.B. bei offenen Rückfragen
 - `processed` – fertig klassifizierte Dokumente, Übergabe an die Fachbereiche
 - `trash` – zur Löschung vorgesehene Dokumente

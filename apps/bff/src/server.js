@@ -1,28 +1,32 @@
 import express from "express";
 import cors from "cors";
-import fs from "node:fs";
-import { config } from "./config.js";
+import { mkdirSync } from "node:fs";
+import { config, swaggerOptions } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
 import schedule from "node-schedule";
 import { deleteOldFiles } from "./services/DeletionService.js";
 import { errorHandler } from "./utils/errorHandler.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+function ensureFolders() {
+  Object.values(config.paths).forEach((folder) => {
+    mkdirSync(folder, { recursive: true });
+  });
+}
 
 app.use(cors());
 app.use(express.json());
 
-function ensureFolders() {
-  Object.values(config.paths).forEach((folder) => {
-    fs.mkdirSync(folder, { recursive: true });
-  });
-}
-
 app.use("/api/health", healthRouter);
 app.use("/api/documents", documentsRouter);
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(errorHandler);
 

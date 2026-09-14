@@ -1,11 +1,12 @@
 import { config } from "../config.js";
 import { getDocumentById } from "./MetadataService.js";
+import { InvalidFileTypeError } from "../errors/UploadErrors.js";
 
 export async function classifyDocument(document) {
   const file = await document.toFileObject();
 
   if (!(file instanceof File) && !(file instanceof Blob)) {
-    throw new Error("A PDF file must be passed");
+    throw new InvalidFileTypeError("A PDF file must be passed");
   }
 
   const url = config.classificationServiceUrl + document.id;
@@ -30,8 +31,8 @@ export async function classifyDocument(document) {
   }
 }
 
-export async function updateClassificationResultMetadataOfDocument(documentId, metadata) {
+export async function updateClassificationMetadata(documentId, metadata = {}) {
   const document = await getDocumentById(documentId);
-  await document.updateClassificationResultMetadata(metadata);
+  if (Object.keys(metadata).length !== 0) await document.updateClassificationMetadata(metadata);
   return document;
 }

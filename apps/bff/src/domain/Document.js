@@ -4,8 +4,9 @@ import { readFile, rename, writeFile } from "node:fs/promises";
 import { addDocumentToMetadata, updateDocumentInMetadata } from "../services/MetadataService.js";
 import { ClassificationType } from "./types/ClassificationType.js";
 import { v4 as uuid } from "uuid";
-import { ClassificationResult } from "./ClassificationResult.js";
+import { Classification } from "./Classification.js";
 import { classifyDocument } from "../services/ClassificationService.js";
+import { AppError } from "../errors/AppError.js";
 
 export class Document {
   constructor(data) {
@@ -14,10 +15,7 @@ export class Document {
     this.path = data.path;
     this.state = data.state;
     this.creationDate = new Date().toISOString();
-    this.classificationResult = data.classificationResult
-      ? new ClassificationResult(data.classificationResult)
-      : null;
-    this.classificationType = data.classificationType ?? null;
+    this.classification = data.classification ? new Classification(data.classification) : null;
     this.editedBy = data.editedBy ?? [];
     this.deletionFlagSetDate = data.deletionFlagSetDate ?? null;
   }
@@ -69,7 +67,7 @@ export class Document {
       case State.TRASH:
         return `${config.paths.trash}/${this.id}.pdf`;
       default:
-        throw new Error(`Invalid state: ${state}`);
+        throw new AppError(`Invalid state: ${state}`, 400);
     }
   }
 
@@ -80,9 +78,11 @@ export class Document {
   async classify() {
     const assessment = await classifyDocument(this);
 
-    this.classificationResult = new ClassificationResult(assessment.result);
-    this.classificationType = ClassificationType.AUTO;
-    if (this.classificationResult.isConfidenceSufficient()) {
+    this.classification = new Classification({
+      ...assessment.result,
+      type: ClassificationType.AUTO,
+    });
+    if (this.classification.isConfidenceSufficient()) {
       await this.changeState(State.PROCESSED);
     } else {
       await this.changeState(State.INBOX);
@@ -91,7 +91,7 @@ export class Document {
 
   async changeState(newState) {
     if (!Object.values(State).includes(newState)) {
-      throw new Error(`Invalid state: ${newState}`);
+      throw new AppError(`Invalid state: ${newState}`, 400);
     }
 
     if (newState === this.state) return;
@@ -107,13 +107,8 @@ export class Document {
     await updateDocumentInMetadata(this);
   }
 
-  async updateClassificationResultMetadata({
-    kind = undefined,
-    docId = undefined,
-    docDateSic = undefined,
-    docSubject = undefined,
-  }) {
-    this.classificationResult.updateMetadata({ kind, docId, docDateSic, docSubject });
+  async updateClassificationMetadata(data) {
+    this.classification.updateMetadata(data);
 
     await updateDocumentInMetadata(this);
   }

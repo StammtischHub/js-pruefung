@@ -1,0 +1,96 @@
+components:
+  schemas:
+    State:
+      type: string
+      enum: [INBOX, SCANNER, PROCESSED, WAITING, TRASH]
+
+    ClassificationType:
+      type: string
+      enum: [MANUAL, CORRECTED, AUTO]
+
+    ScoredValue:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The extracted value.
+        score:
+          type: number
+          format: float
+          description: Confidence score of the extracted value.
+        isCorrected:
+          type: boolean
+          description: Whether the value is manually corrected.
+
+    Classification:
+      type: object
+      properties:
+        kind:
+          type: string
+        docId:
+          allOf:
+            - $ref: "#/components/schemas/ScoredValue"
+        docDateSic:
+          allOf:
+            - $ref: "#/components/schemas/ScoredValue"
+        docDateParsed:
+          type: string
+          format: date-time
+          nullable: true
+        docSubject:
+          allOf:
+            - $ref: "#/components/schemas/ScoredValue"
+        type:
+          allOf:
+            - $ref: "#/components/schemas/ClassificationType"
+
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        originalName:
+          type: string
+        path:
+          type: string
+          nullable: true
+        state:
+          $ref: "#/components/schemas/State"
+        creationDate:
+          type: string
+          format: date-time
+        classification:
+          allOf:
+            - $ref: "#/components/schemas/Classification"
+          nullable: true
+        editedBy:
+          type: array
+          items:
+            type: string
+        deletionFlagSetDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    BulkActionResult:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          description: The ID of the document this result refers to.
+        status:
+          type: integer
+          description: Outcome status for this individual document (200, 404, or 500).
+        document:
+          $ref: "#/components/schemas/Document"
+        error:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

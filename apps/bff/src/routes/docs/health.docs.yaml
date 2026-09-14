@@ -1,0 +1,9 @@
+paths:
+  /health:
+    get:
+      summary: Checks if the BFF is healthy and running
+      tags:
+        - Health
+      responses:
+        "200":
+          description: BFF is healthy

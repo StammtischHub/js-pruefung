@@ -8,10 +8,11 @@ import {
   prepDocumentsForDeletion,
   classifyDocuments,
 } from "../services/BulkActionService.js";
-import { updateClassificationResultMetadataOfDocument } from "../services/ClassificationService.js";
+import { updateClassificationMetadata } from "../services/ClassificationService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../errors/AppError.js";
 import { pdfUpload } from "../services/UploadService.js";
+import { getUnknownMetadataFields } from "../utils/MetadataFields.js";
 
 const router = express.Router();
 
@@ -112,7 +113,11 @@ router.put(
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: "No 'id' path parameter provided." });
 
-    const document = await updateClassificationResultMetadataOfDocument(id, req.body);
+    const unknownFields = getUnknownMetadataFields(req.body);
+    if (unknownFields.length > 0)
+      throw new AppError(`Unknown fields provided in body: ${unknownFields.join(", ")}`, 400);
+
+    const document = await updateClassificationMetadata(id, req.body);
     return res.status(200).json(document);
   })
 );

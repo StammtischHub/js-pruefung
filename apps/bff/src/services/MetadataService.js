@@ -14,11 +14,11 @@ async function readAll() {
   try {
     const raw = await fs.readFile(config.metadataFile, "utf-8");
     return JSON.parse(raw);
-  } catch (err) {
-    if (err.code === "ENOENT") {
+  } catch (error) {
+    if (error.code === "ENOENT") {
       return [];
     }
-    throw err;
+    throw error;
   }
 }
 
@@ -46,7 +46,7 @@ export async function updateDocumentInMetadata(document) {
     const documentIndex = allMetadata.findIndex((doc) => doc.id === document.id);
 
     if (documentIndex === -1) {
-      throw new Error(`Document with ID ${document.id} not found`);
+      throw new NotFoundError(`Document with ID '${document.id}' not found`);
     }
     allMetadata[documentIndex] = document;
 

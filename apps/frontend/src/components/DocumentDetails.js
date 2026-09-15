@@ -1,9 +1,19 @@
-import { createConfidenceView } from "../components/ConfidenceView.js";
+import { api } from "../api.js";
+import { createConfidenceView } from "./ConfidenceView.js";
+import { renderDocumentEditDialog } from "./DocumentEditDialog.js";
+
+const categoryLabels = {
+  INVOICE: "Rechnung",
+  STATEMENT: "Kontoauszug",
+  LETTER: "Brief",
+  UNKNOWN: "Unbekannt",
+};
 
 export function renderDocumentDetails(app, doc, onBack) {
   app.innerHTML = `
     <section id="detail-view" class="view">
       <h2>Dokumentdetails</h2>
+      <p id="save-message" class="success-message"></p>
 
       <h3>Dokument</h3>
 
@@ -33,12 +43,12 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <p>
         <strong>Kategorie:</strong>
-        <span>${doc.classificationResult.kind}</span>
+        <span>${categoryLabels[doc.classification?.kind] ?? "Unbekannt"}</span>
       </p>
 
       <p>
         <strong>Klassifizierungsart:</strong>
-        <span>${doc.classificationType}</span>
+        <span>${doc.classification.type}</span>
       </p>
 
       <hr />
@@ -46,41 +56,56 @@ export function renderDocumentDetails(app, doc, onBack) {
       <h3>Erkannte Metadaten</h3>
       <p>
         <strong>Dokument-ID:</strong>
-        <span>${doc.classificationResult.docId.value}</span>
+        <span id="document-id-value"></span>
       </p>
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classificationResult.docId.score)}
+        ${createConfidenceView(doc.classification.docId.score)}
       </div>
 
 
       <p>
         <strong>Dokumentdatum:</strong>
-        <span>${doc.classificationResult.docDateSic.value}</span>
+        <span id="document-date-value"></span>
       </p>
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classificationResult.docDateSic.score)}
+        ${createConfidenceView(doc.classification.docDateSic.score)}
       </div>
 
 
      <p>
         <strong>Betreff:</strong>
-        <span>${doc.classificationResult.docSubject.value}</span>
+        <span id="document-subject-value"></span>
       </p>
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classificationResult.docSubject.score)}
+        ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
-
+      <button type="button" id="edit-document">
+        Metadaten bearbeiten
+      </button>
       <button type="button" id="back-to-inbox">
         Zurück zur Inbox
       </button>
     </section>
   `;
-
+  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
+  document.getElementById("document-subject-value").textContent =
+    doc.classification.docSubject.value;
+  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
+
+  document.getElementById("edit-document").addEventListener("click", () => {
+    renderDocumentEditDialog(doc, async (changes) => {
+      const updateDocument = await api.updateDocument(doc.id, changes);
+
+      renderDocumentDetails(app, updateDocument, onBack);
+
+      document.getElementById("save-message").textContent = "Metadaten erfolgreich gespeichert!";
+    });
+  });
 }

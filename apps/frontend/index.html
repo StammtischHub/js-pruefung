@@ -13,14 +13,21 @@
     <header>
       <h1>Intelligenter Posteingang</h1>
 
-      <nav id="main-nav">
-        <button type="button" data-view="inbox">Inbox</button>
-        <button type="button" data-view="review">Zu prüfen</button>
-        <button type="button" data-view="waiting">Warteposition</button>
-        <button type="button" data-view="trash">Papierkorb</button>
-      </nav>
+      <div class="header-actions">
+        <div class="document-upload">
+          <button class="button" id="upload-button" type="button">PDF hochladen</button>
+          <input id="document-upload" type="file" accept=".pdf,application/pdf" hidden />
+        </div>
+        <nav id="main-nav" aria-label="Hauptnavigation">
+          <button class="button" type="button" data-view="inbox">Inbox</button>
+          <button class="button" type="button" data-view="review">Zu prüfen</button>
+          <button class="button" type="button" data-view="waiting">Warteposition</button>
+          <button class="button" type="button" data-view="trash">Papierkorb</button>
+        </nav>
+      </div>
     </header>
 
+    <p id="upload-status" role="status" aria-live="polite" hidden></p>
     <main id="app"></main>
 
     <script type="module" src="./src/main.js"></script>

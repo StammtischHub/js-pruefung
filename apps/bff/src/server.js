@@ -4,6 +4,7 @@ import { mkdirSync } from "node:fs";
 import { config, swaggerOptions } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
+import pdfRouter from "./routes/pdf.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
 import schedule from "node-schedule";
 import { deleteOldFiles } from "./services/DeletionService.js";
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use("/api/health", healthRouter);
 app.use("/api/documents", documentsRouter);
+app.use("/api/pdf", pdfRouter);
 app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(errorHandler);

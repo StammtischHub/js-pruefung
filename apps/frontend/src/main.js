@@ -8,6 +8,8 @@ import { initDocumentUpload } from "./components/DocumentUpload.js";
 const app = document.getElementById("app");
 let currentView = "inbox";
 const navButtons = document.querySelectorAll("#main-nav button");
+const authenticatedActions = document.getElementById("authenticated-actions");
+const userDisplay = document.getElementById("user-display");
 
 initDocumentUpload(
   document.getElementById("document-upload"),
@@ -33,6 +35,52 @@ async function refreshAfterUpload(document) {
       return;
     }
   }
+}
+function showAuthenticatedUser(username) {
+  userDisplay.textContent = `Angemeldet als: ${username}`;
+  authenticatedActions.hidden = false;
+}
+
+function renderLogin() {
+  app.innerHTML = `
+  <section class="view">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label for="username">Benutzername:</label>
+      <input type="text" id="username" name="username" maxlength="50" required />
+      <button class="button" type="submit">Login</button>
+
+      <p id="login-message"></p>
+    </form>
+  </section>
+  `;
+
+  const form = document.getElementById("login-form");
+  const input = document.getElementById("username");
+  const message = document.getElementById("login-message");
+  const button = form.querySelector("button");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const username = input.value.trim();
+    if (!username) {
+      message.textContent = "Bitte gib einen Benutzernamen ein.";
+      return;
+    }
+
+    button.disabled = true;
+
+    try {
+      await api.identify(username);
+
+      sessionStorage.setItem("username", username);
+      showAuthenticatedUser(username);
+      await renderView("inbox");
+    } catch (error) {
+      message.textContent = "Login fehlgeschlagen.";
+      button.disabled = false;
+    }
+  });
 }
 
 async function renderView(viewName) {
@@ -68,4 +116,10 @@ function handleRenderError(error) {
   app.textContent = "Die Ansicht konnte nicht geladen werden. Bitte versuche es erneut.";
 }
 
-renderView("inbox").catch(handleRenderError);
+const savedUsername = sessionStorage.getItem("username");
+if (savedUsername) {
+  showAuthenticatedUser(savedUsername);
+  renderView("inbox").catch(handleRenderError);
+} else {
+  renderLogin();
+}

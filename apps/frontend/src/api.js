@@ -14,7 +14,21 @@ async function request(path, options = {}) {
   return response.json();
 }
 
+async function identify(username) {
+  const response = await fetch(`${BASE_URL}/identify`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, redirect: window.location.origin }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API-Error: ${response.status} ${response.statusText}`);
+  }
+}
+
 export const api = {
+  identify,
   health: () => request("/health"),
   getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
   updateDocument: (id, metadata) =>

@@ -85,6 +85,9 @@ export function renderDocumentDetails(app, doc, onBack) {
         <strong>Confidence:</strong>
         ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
+      <button type="button" id="wait-document">
+      Zurückstellen
+      </button>
       <button type="button" id="edit-document">
         Metadaten bearbeiten
       </button>
@@ -98,6 +101,26 @@ export function renderDocumentDetails(app, doc, onBack) {
     doc.classification.docSubject.value;
   document.getElementById("document-id-value").textContent = doc.classification.docId.value;
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
+  document.getElementById("wait-document").addEventListener("click", async () => {
+    const button = document.getElementById("wait-document");
+    const message = document.getElementById("save-message");
+    button.disabled = true;
+
+    try {
+      const results = await api.waitDocuments([doc.id]);
+      const result = results[0];
+
+      if (!result || result.status !== 200) {
+        throw new Error(result?.error);
+      }
+
+      onBack();
+    } catch (error) {
+      message.className = "error-message";
+      message.textContent = "Das Dokument konnte nicht zurückgestellt werden.";
+      button.disabled = false;
+    }
+  });
 
   document.getElementById("edit-document").addEventListener("click", () => {
     renderDocumentEditDialog(doc, async (changes) => {

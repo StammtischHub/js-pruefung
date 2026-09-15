@@ -73,7 +73,6 @@ export function renderDocumentDetails(app, doc, onBack) {
         ${createConfidenceView(doc.classification.docId.score)}
       </div>
 
-
       <p>
         <strong>Dokumentdatum:</strong>
         <span id="document-date-value"></span>
@@ -84,8 +83,7 @@ export function renderDocumentDetails(app, doc, onBack) {
         ${createConfidenceView(doc.classification.docDateSic.score)}
       </div>
 
-
-     <p>
+      <p>
         <strong>Betreff:</strong>
         <span id="document-subject-value"></span>
       </p>
@@ -99,6 +97,14 @@ export function renderDocumentDetails(app, doc, onBack) {
         Metadaten bearbeiten
       </button>
 
+      <button type="button" id="mark-for-deletion">
+        Löschen vormerken
+      </button>
+
+      <p id="delete-error" hidden>
+        Dokument konnte nicht zur Löschung vorgemerkt werden.
+      </p>
+
       <button type="button" id="back-to-inbox">
         Zurück zur Inbox
       </button>
@@ -106,8 +112,10 @@ export function renderDocumentDetails(app, doc, onBack) {
   `;
 
   document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
+
   document.getElementById("document-subject-value").textContent =
     doc.classification.docSubject.value;
+
   document.getElementById("document-id-value").textContent = doc.classification.docId.value;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
@@ -123,11 +131,11 @@ export function renderDocumentDetails(app, doc, onBack) {
   });
 
   const reclassifyButton = document.getElementById("reclassify-document");
-  const errorMessage = document.getElementById("reclassify-error");
+  const reclassifyError = document.getElementById("reclassify-error");
 
   reclassifyButton.addEventListener("click", async () => {
     try {
-      errorMessage.hidden = true;
+      reclassifyError.hidden = true;
       reclassifyButton.disabled = true;
       reclassifyButton.textContent = "Klassifizierung läuft...";
 
@@ -156,9 +164,43 @@ export function renderDocumentDetails(app, doc, onBack) {
     } catch (error) {
       console.error("Reclassify failed:", error);
 
-      errorMessage.hidden = false;
+      reclassifyError.hidden = false;
       reclassifyButton.disabled = false;
       reclassifyButton.textContent = "Klassifizierung wiederholen";
+    }
+  });
+
+  const deleteButton = document.getElementById("mark-for-deletion");
+  const deleteError = document.getElementById("delete-error");
+
+  deleteButton.addEventListener("click", async () => {
+    try {
+      deleteError.hidden = true;
+      deleteButton.disabled = true;
+      deleteButton.textContent = "Wird vorgemerkt...";
+
+      const response = await api.prepareForDeletion(doc.id);
+      const result = Array.isArray(response) ? response[0] : response;
+
+      if (!result) {
+        throw new Error("Keine Antwort für das Dokument erhalten.");
+      }
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      if (typeof result.status === "number" && result.status >= 400) {
+        throw new Error(`Vormerken fehlgeschlagen: ${result.status}`);
+      }
+
+      onBack();
+    } catch (error) {
+      console.error("Preparing document for deletion failed:", error);
+
+      deleteError.hidden = false;
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Löschen vormerken";
     }
   });
 }

@@ -1,6 +1,7 @@
 import { api } from "../api.js";
 import { renderDocumentDetails } from "../components/DocumentDetails.js";
 import { createConfidenceView } from "../components/ConfidenceView.js";
+import { renderDocumentTable } from "../components/DocumentTable.js";
 
 const categoryLabels = {
   INVOICE: "Rechnung",
@@ -22,66 +23,49 @@ export async function renderInboxView(app) {
     <section class="view">
       <h2>Inbox</h2>
 
-      <table id="inbox-table">
-        <thead>
-          <tr>
-            <th>Dateiname</th>
-            <th>Status</th>
-            <th>Kategorie</th>
-            <th>Confidence</th>
-            <th>Klassifizierungsart</th>
-          </tr>
-        </thead>
-
-        <tbody id="inbox-list"></tbody>
-      </table>
-
-      <p id="inbox-empty" hidden>
-        Keine Dokumente in der Inbox.
-      </p>
+      <div id="inbox-list"></div>
     </section>
   `;
 
   const inboxList = document.getElementById("inbox-list");
-  const inboxTable = document.getElementById("inbox-table");
-  const inboxEmpty = document.getElementById("inbox-empty");
 
-  if (inboxDocuments.length === 0) {
-    inboxTable.hidden = true;
-    inboxEmpty.hidden = false;
-    return;
-  }
+  const columns = [
+    {
+      label: "Dateiname",
+      value: (doc) => doc.originalName,
+    },
+    {
+      label: "Status",
+      value: (doc) => doc.state,
+    },
+    {
+      label: "Kategorie",
+      value: (doc) => categoryLabels[doc.classification?.kind] ?? "–",
+    },
+    {
+      label: "Confidence",
+      render: (doc) =>
+        createConfidenceView(
+          Math.min(
+            doc.classification?.docId?.score ?? 0,
+            doc.classification?.docDateSic?.score ?? 0,
+            doc.classification?.docSubject?.score ?? 0
+          )
+        ),
+    },
+    {
+      label: "Klassifizierungsart",
+      value: (doc) => doc.classification?.type ?? "–",
+    },
+  ];
 
-  inboxDocuments.forEach((doc) => {
-    const row = document.createElement("tr");
-
-    row.dataset.id = doc.id;
-
-    row.innerHTML = `
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>${createConfidenceView(
-        Math.min(
-          doc.classification?.docId?.score ?? 0,
-          doc.classification?.docDateSic?.score ?? 0,
-          doc.classification?.docSubject?.score ?? 0
-        )
-      )}</td>
-      <td></td>
-    `;
-
-    row.cells[0].textContent = doc.originalName;
-    row.cells[1].textContent = doc.state;
-    row.cells[2].textContent = categoryLabels[doc.classification?.kind] ?? "–";
-    row.cells[4].textContent = doc.classification?.type ?? "–";
-
-    row.addEventListener("click", () => {
+  renderDocumentTable(inboxList, inboxDocuments, columns, {
+    tableId: "inbox-table",
+    emptyText: "Keine Dokumente in der Inbox.",
+    onRowClick: (doc) => {
       renderDocumentDetails(app, doc, () => {
         renderInboxView(app);
       });
-    });
-
-    inboxList.appendChild(row);
+    },
   });
 }

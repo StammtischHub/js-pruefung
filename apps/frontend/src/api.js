@@ -35,4 +35,12 @@ export const api = {
         documentIds: [id],
       }),
     }),
+
+  prepareForDeletion: (id) =>
+    request("/documents/prep-for-deletion", {
+      method: "PUT",
+      body: JSON.stringify({
+        documentIds: [id],
+      }),
+    }),
 };

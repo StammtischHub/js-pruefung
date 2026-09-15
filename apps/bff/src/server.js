@@ -13,7 +13,6 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 import  { randomBytes } from "crypto";
 import cookieParser from "cookie-parser";
-import { requireIdentity } from "./middlewares/IdentityMiddleware.js";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
@@ -31,7 +30,7 @@ app.use(express.json());
 app.use(cookieParser(cookieSecret));
 
 app.use("/api/health", healthRouter);
-app.use("/api/documents", requireIdentity, documentsRouter);
+app.use("/api/documents", documentsRouter);
 app.use("/api/identify", identificationRouter);
 app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 

@@ -36,6 +36,5 @@
     "prettier": "^3.9.6"
   },
   "dependencies": {
-    "cookie-parser": "^1.4.7"
   }
 }

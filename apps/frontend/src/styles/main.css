@@ -75,20 +75,23 @@ main {
   margin-top: 0;
 }
 
-#inbox-table {
+#inbox-table,
+#waiting-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
 }
 
-#inbox-table th {
+#inbox-table th,
+#waiting-table th {
   text-align: left;
   padding: 0.75rem 1rem;
   background: #f2f2f3;
   border-bottom: 2px solid #dcdcdc;
 }
 
-#inbox-table td {
+#inbox-table td,
+#waiting-table td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e5e5;
 }
@@ -113,7 +116,8 @@ main {
 }
 
 #back-to-inbox,
-#edit-document {
+#edit-document,
+#wait-document {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   border: 1px solid #d0d0d0;
@@ -123,7 +127,8 @@ main {
 }
 
 #back-to-inbox:hover,
-#edit-document:hover {
+#edit-document:hover,
+#wait-document:hover {
   background: #f0f0f0;
 }
 
@@ -172,5 +177,17 @@ main {
 }
 
 .success-message:empty {
+  display: none;
+}
+
+.error-message {
+  padding: 0.75rem 1rem;
+  color: #7a1f1f;
+  background: #f9eaea;
+  border: 1px solid #e0b4b4;
+  border-radius: 6px;
+}
+
+.error-message:empty {
   display: none;
 }

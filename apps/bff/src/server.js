@@ -4,6 +4,7 @@ import { mkdirSync } from "node:fs";
 import { config, swaggerOptions } from "./config.js";
 import healthRouter from "./routes/health.js";
 import documentsRouter from "./routes/documents.js";
+import identificationRouter from "./routes/identification.js";
 import pdfRouter from "./routes/pdf.js";
 import ScannerReaderService from "./services/ScannerReaderService.js";
 import schedule from "node-schedule";
@@ -11,10 +12,13 @@ import { deleteOldFiles } from "./services/DeletionService.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
+import { randomBytes } from "crypto";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const readerService = new ScannerReaderService(config.paths.scanner);
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
+const cookieSecret = randomBytes(32).toString("hex");
 
 function ensureFolders() {
   Object.values(config.paths).forEach((folder) => {
@@ -24,9 +28,11 @@ function ensureFolders() {
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser(cookieSecret));
 
 app.use("/api/health", healthRouter);
 app.use("/api/documents", documentsRouter);
+app.use("/api/identify", identificationRouter);
 app.use("/api/pdf", pdfRouter);
 app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 

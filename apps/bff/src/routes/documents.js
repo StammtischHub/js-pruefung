@@ -7,18 +7,22 @@ import {
   changeStateOfDocuments,
   prepDocumentsForDeletion,
   classifyDocuments,
+  addEditorToDocuments,
 } from "../services/BulkActionService.js";
 import { updateClassificationMetadata } from "../services/ClassificationService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../errors/AppError.js";
 import { pdfUpload } from "../services/UploadService.js";
 import { getUnknownMetadataFields } from "../utils/MetadataFields.js";
+import { requireIdentity } from "../middlewares/IdentityMiddleware.js";
 
 const router = express.Router();
 
 router.post(
   "/",
+  requireIdentity,
   asyncHandler(async (req, res) => {
+    const editor = req.username;
     await pdfUpload(req, res);
 
     if (!req.file) {
@@ -26,7 +30,8 @@ router.post(
     }
 
     const document = await Document.forNewFile(req.file);
-    return res.status(201).json(document);
+    const updatedDocument = await addEditorToDocuments(document.id, editor);
+    return res.status(201).json(updatedDocument);
   })
 );
 
@@ -54,10 +59,13 @@ router.get(
 
 router.put(
   "/wait",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const documentIds = req.body.documentIds;
+    const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.WAITING);
     return res.status(207).json(results);
   })
@@ -65,10 +73,13 @@ router.put(
 
 router.put(
   "/continue",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const documentIds = req.body.documentIds;
+    const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.INBOX);
     return res.status(207).json(results);
   })
@@ -76,10 +87,13 @@ router.put(
 
 router.put(
   "/finish",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const documentIds = req.body.documentIds;
+    const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
     return res.status(207).json(results);
   })
@@ -87,10 +101,13 @@ router.put(
 
 router.put(
   "/prep-for-deletion",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const documentIds = req.body.documentIds;
+    const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
+    await addEditorToDocuments(documentIds, editor);
     const results = await prepDocumentsForDeletion(documentIds);
     return res.status(207).json(results);
   })
@@ -98,10 +115,13 @@ router.put(
 
 router.post(
   "/classify",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const documentIds = req.body.documentIds;
+    const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
+    await addEditorToDocuments(documentIds, editor);
     const results = await classifyDocuments(documentIds);
     return res.status(207).json(results);
   })
@@ -109,14 +129,17 @@ router.post(
 
 router.put(
   "/:id",
+  requireIdentity,
   asyncHandler(async (req, res) => {
     const id = req.params.id;
+    const editor = req.username;
     if (!id) return res.status(400).json({ error: "No 'id' path parameter provided." });
 
     const unknownFields = getUnknownMetadataFields(req.body);
     if (unknownFields.length > 0)
       throw new AppError(`Unknown fields provided in body: ${unknownFields.join(", ")}`, 400);
 
+    await addEditorToDocuments([id], editor);
     const document = await updateClassificationMetadata(id, req.body);
     return res.status(200).json(document);
   })

@@ -71,8 +71,9 @@ export class Document {
     }
   }
 
-  addEditor(editor) {
+  async addEditor(editor) {
     this.editedBy.push(editor);
+    await updateDocumentInMetadata(this);
   }
 
   async classify() {

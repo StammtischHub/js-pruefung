@@ -31,6 +31,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "413":
           description: The uploaded file exceeds the allowed file size limit.
           content:
@@ -140,6 +146,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: An unexpected error occurred.
           content:
@@ -177,6 +189,12 @@ paths:
                   $ref: "#/components/schemas/BulkActionResult"
         "400":
           description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
           content:
             application/json:
               schema:
@@ -222,6 +240,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: An unexpected error occurred.
           content:
@@ -263,6 +287,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: An unexpected error occurred.
           content:
@@ -300,6 +330,12 @@ paths:
                   $ref: "#/components/schemas/BulkActionResult"
         "400":
           description: No 'documentIds' key provided in the request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
           content:
             application/json:
               schema:
@@ -348,6 +384,12 @@ paths:
                 $ref: "#/components/schemas/Document"
         "400":
           description: No 'id' path parameter provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: No Username cookie provided.
           content:
             application/json:
               schema:

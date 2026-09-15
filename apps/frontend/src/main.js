@@ -75,9 +75,8 @@ function renderLogin() {
 
       sessionStorage.setItem("username", username);
       showAuthenticatedUser(username);
-      await renderView("inbox");
     } catch (error) {
-      message.textContent = "Login fehlgeschlagen.";
+      message.textContent = "Login fehlgeschlagen: " + error.message;
       button.disabled = false;
     }
   });

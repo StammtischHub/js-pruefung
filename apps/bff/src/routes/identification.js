@@ -20,7 +20,11 @@ router.post(
       maxAge: 1000 * 60 * 60,
     });
 
-    res.redirect(req.body.redirect || "");
+    if (req.body.redirect) {
+      return res.redirect(req.body.redirect);
+    }
+
+    res.status(200).json({ username });
   })
 );
 

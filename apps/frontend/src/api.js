@@ -19,7 +19,7 @@ async function identify(username) {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, redirect: window.location.origin }),
+    body: JSON.stringify({ username }),
   });
 
   if (!response.ok) {

@@ -2,6 +2,7 @@ const BASE_URL = "http://localhost:4000/api";
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     ...options,
   });
@@ -27,4 +28,11 @@ export const api = {
 
     return request("/documents/", { method: "POST", headers: {}, body });
   },
+  reclassifyDocument: (id) =>
+    request("/documents/classify", {
+      method: "POST",
+      body: JSON.stringify({
+        documentIds: [id],
+      }),
+    }),
 };

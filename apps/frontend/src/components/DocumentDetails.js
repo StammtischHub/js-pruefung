@@ -51,9 +51,18 @@ export function renderDocumentDetails(app, doc, onBack) {
         <span>${doc.classification.type}</span>
       </p>
 
+      <button type="button" id="reclassify-document">
+        Klassifizierung wiederholen
+      </button>
+
+      <p id="reclassify-error" hidden>
+        Klassifizierung konnte nicht erneut durchgeführt werden.
+      </p>
+
       <hr />
 
       <h3>Erkannte Metadaten</h3>
+
       <p>
         <strong>Dokument-ID:</strong>
         <span id="document-id-value"></span>
@@ -85,18 +94,24 @@ export function renderDocumentDetails(app, doc, onBack) {
         <strong>Confidence:</strong>
         ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
+
       <button type="button" id="edit-document">
         Metadaten bearbeiten
       </button>
+
       <button type="button" id="back-to-inbox">
         Zurück zur Inbox
       </button>
     </section>
   `;
-  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
+
+  document.getElementById("document-date-value").textContent =
+    doc.classification.docDateSic.value;
   document.getElementById("document-subject-value").textContent =
     doc.classification.docSubject.value;
-  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
+  document.getElementById("document-id-value").textContent =
+    doc.classification.docId.value;
+
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
 
   document.getElementById("edit-document").addEventListener("click", () => {
@@ -105,7 +120,48 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       renderDocumentDetails(app, updateDocument, onBack);
 
-      document.getElementById("save-message").textContent = "Metadaten erfolgreich gespeichert!";
+      document.getElementById("save-message").textContent =
+        "Metadaten erfolgreich gespeichert!";
     });
+  });
+
+  const reclassifyButton = document.getElementById("reclassify-document");
+  const errorMessage = document.getElementById("reclassify-error");
+
+  reclassifyButton.addEventListener("click", async () => {
+    try {
+      errorMessage.hidden = true;
+      reclassifyButton.disabled = true;
+      reclassifyButton.textContent = "Klassifizierung läuft...";
+
+      const response = await api.reclassifyDocument(doc.id);
+      const result = Array.isArray(response) ? response[0] : response;
+
+      if (!result) {
+        throw new Error("Keine Antwort für das Dokument erhalten.");
+      }
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      if (typeof result.status === "number" && result.status >= 400) {
+        throw new Error(`Klassifizierung fehlgeschlagen: ${result.status}`);
+      }
+
+      const updatedDocument = result.document ?? result;
+
+      if (!updatedDocument?.id) {
+        throw new Error("Kein aktualisiertes Dokument erhalten.");
+      }
+
+      renderDocumentDetails(app, updatedDocument, onBack);
+    } catch (error) {
+      console.error("Reclassify failed:", error);
+
+      errorMessage.hidden = false;
+      reclassifyButton.disabled = false;
+      reclassifyButton.textContent = "Klassifizierung wiederholen";
+    }
   });
 }

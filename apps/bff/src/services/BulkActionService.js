@@ -71,7 +71,7 @@ export function classifyDocuments(documentIds) {
   );
 }
 
-export function addEditorToDocument(documentsIds, username) {
+export function addEditorToDocuments(documentsIds, username) {
   return processDocuments(
     documentsIds,
     (document) => document.addEditor(username),

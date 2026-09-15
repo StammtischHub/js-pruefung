@@ -7,7 +7,7 @@ import {
   changeStateOfDocuments,
   prepDocumentsForDeletion,
   classifyDocuments,
-  addEditorToDocument,
+  addEditorToDocuments,
 } from "../services/BulkActionService.js";
 import { updateClassificationMetadata } from "../services/ClassificationService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -22,6 +22,7 @@ router.post(
   "/",
   requireIdentity,
   asyncHandler(async (req, res) => {
+    const editor = req.username;
     await pdfUpload(req, res);
 
     if (!req.file) {
@@ -29,7 +30,7 @@ router.post(
     }
 
     const document = await Document.forNewFile(req.file);
-    const updatedDocument = await addEditorToDocument(document.id);
+    const updatedDocument = await addEditorToDocuments(document.id, editor);
     return res.status(201).json(updatedDocument);
   })
 );
@@ -64,7 +65,7 @@ router.put(
     const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
-    await addEditorToDocument(documentIds, editor);
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.WAITING);
     return res.status(207).json(results);
   })
@@ -78,7 +79,7 @@ router.put(
     const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
-    await addEditorToDocument(documentIds, editor);
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.INBOX);
     return res.status(207).json(results);
   })
@@ -92,7 +93,7 @@ router.put(
     const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
-    await addEditorToDocument(documentIds, editor);
+    await addEditorToDocuments(documentIds, editor);
     const results = await changeStateOfDocuments(documentIds, State.PROCESSED);
     return res.status(207).json(results);
   })
@@ -106,7 +107,7 @@ router.put(
     const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
-    await addEditorToDocument(documentIds, editor);
+    await addEditorToDocuments(documentIds, editor);
     const results = await prepDocumentsForDeletion(documentIds);
     return res.status(207).json(results);
   })
@@ -120,7 +121,7 @@ router.post(
     const editor = req.username;
     if (!documentIds) throw new AppError("No 'documentIds' key provided in body.", 400);
 
-    await addEditorToDocument(documentIds, editor);
+    await addEditorToDocuments(documentIds, editor);
     const results = await classifyDocuments(documentIds);
     return res.status(207).json(results);
   })
@@ -138,7 +139,7 @@ router.put(
     if (unknownFields.length > 0)
       throw new AppError(`Unknown fields provided in body: ${unknownFields.join(", ")}`, 400);
 
-    await addEditorToDocument([id], editor);
+    await addEditorToDocuments([id], editor);
     const document = await updateClassificationMetadata(id, req.body);
     return res.status(200).json(document);
   })

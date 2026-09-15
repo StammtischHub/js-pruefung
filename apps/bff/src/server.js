@@ -12,7 +12,7 @@ import { deleteOldFiles } from "./services/DeletionService.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
-import  { randomBytes } from "crypto";
+import { randomBytes } from "crypto";
 import cookieParser from "cookie-parser";
 
 const app = express();

@@ -78,7 +78,10 @@ function renderLogin() {
     } catch (error) {
       message.textContent = "Login fehlgeschlagen: " + error.message;
       button.disabled = false;
+      return;
     }
+
+    renderView("inbox").catch(handleRenderError);
   });
 }
 

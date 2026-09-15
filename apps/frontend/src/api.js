@@ -16,6 +16,11 @@ async function request(path, options = {}) {
 export const api = {
   health: () => request("/health"),
   getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
+  updateDocument: (id, metadata) =>
+    request(`/documents/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      body: JSON.stringify(metadata),
+    }),
   uploadDocument: (file) => {
     const body = new FormData();
     body.append("file", file);

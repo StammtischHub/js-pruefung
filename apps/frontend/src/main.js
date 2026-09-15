@@ -8,6 +8,8 @@ import { initDocumentUpload } from "./components/DocumentUpload.js";
 const app = document.getElementById("app");
 let currentView = "inbox";
 const navButtons = document.querySelectorAll("#main-nav button");
+const authenticatedActions = document.getElementById("authenticated-actions");
+const userDisplay = document.getElementById("user-display");
 
 initDocumentUpload(
   document.getElementById("document-upload"),
@@ -34,6 +36,63 @@ async function refreshAfterUpload(document) {
     }
   }
 }
+function showAuthenticatedUser(username) {
+  userDisplay.textContent = `Angemeldet als: ${username}`;
+  authenticatedActions.hidden = false;
+}
+
+function renderLogin(infoMessage = "") {
+  authenticatedActions.hidden = true;
+  userDisplay.textContent = "";
+
+  app.innerHTML = `
+  <section class="view">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label for="username">Benutzername:</label>
+      <input type="text" id="username" name="username" maxlength="50" required />
+      <button class="button" type="submit">Login</button>
+
+      <p id="login-message"></p>
+    </form>
+  </section>
+  `;
+
+  const form = document.getElementById("login-form");
+  const input = document.getElementById("username");
+  const message = document.getElementById("login-message");
+  const button = form.querySelector("button");
+
+  message.textContent = infoMessage;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const username = input.value.trim();
+    if (!username) {
+      message.textContent = "Bitte gib einen Benutzernamen ein.";
+      return;
+    }
+
+    button.disabled = true;
+
+    try {
+      await api.identify(username);
+
+      sessionStorage.setItem("username", username);
+      showAuthenticatedUser(username);
+    } catch (error) {
+      message.textContent = "Login fehlgeschlagen: " + error.message;
+      button.disabled = false;
+      return;
+    }
+
+    renderView("inbox").catch(handleRenderError);
+  });
+}
+
+window.addEventListener("session-expired", () => {
+  renderLogin("Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.");
+});
 
 async function renderView(viewName) {
   currentView = viewName;
@@ -68,4 +127,10 @@ function handleRenderError(error) {
   app.textContent = "Die Ansicht konnte nicht geladen werden. Bitte versuche es erneut.";
 }
 
-renderView("inbox").catch(handleRenderError);
+const savedUsername = sessionStorage.getItem("username");
+if (savedUsername) {
+  showAuthenticatedUser(savedUsername);
+  renderView("inbox").catch(handleRenderError);
+} else {
+  renderLogin();
+}

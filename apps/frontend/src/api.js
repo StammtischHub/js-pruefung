@@ -21,7 +21,6 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(metadata),
     }),
-  getDocument: (id) => request(`/documents/${encodeURIComponent(id)}`),
   uploadDocument: (file) => {
     const body = new FormData();
     body.append("file", file);

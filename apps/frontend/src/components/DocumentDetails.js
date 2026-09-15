@@ -2,6 +2,13 @@ import { api } from "../api.js";
 import { createConfidenceView } from "./ConfidenceView.js";
 import { renderDocumentEditDialog } from "./DocumentEditDialog.js";
 
+const categoryLabels = {
+  INVOICE: "Rechnung",
+  STATEMENT: "Kontoauszug",
+  LETTER: "Brief",
+  UNKNOWN: "Unbekannt",
+};
+
 export function renderDocumentDetails(app, doc, onBack) {
   app.innerHTML = `
     <section id="detail-view" class="view">
@@ -36,7 +43,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <p>
         <strong>Kategorie:</strong>
-        <span>${doc.classification.kind}</span>
+        <span>${categoryLabels[doc.classification?.kind] ?? "Unbekannt"}</span>
       </p>
 
       <p>

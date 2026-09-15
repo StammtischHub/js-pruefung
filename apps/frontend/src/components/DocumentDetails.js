@@ -105,12 +105,10 @@ export function renderDocumentDetails(app, doc, onBack) {
     </section>
   `;
 
-  document.getElementById("document-date-value").textContent =
-    doc.classification.docDateSic.value;
+  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
   document.getElementById("document-subject-value").textContent =
     doc.classification.docSubject.value;
-  document.getElementById("document-id-value").textContent =
-    doc.classification.docId.value;
+  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
 
@@ -120,8 +118,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       renderDocumentDetails(app, updateDocument, onBack);
 
-      document.getElementById("save-message").textContent =
-        "Metadaten erfolgreich gespeichert!";
+      document.getElementById("save-message").textContent = "Metadaten erfolgreich gespeichert!";
     });
   });
 

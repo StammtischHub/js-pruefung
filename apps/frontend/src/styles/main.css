@@ -115,7 +115,8 @@ main {
 #back-to-inbox,
 #edit-document,
 #reclassify-document,
-#mark-for-deletion {
+#mark-for-deletion,
+#wait-document {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   border: 1px solid #d0d0d0;
@@ -204,4 +205,16 @@ main {
 
 #user-display {
   font-weight: 600;
+}
+
+.error-message {
+  padding: 0.75rem 1rem;
+  color: #7a1f1f;
+  background: #f9eaea;
+  border: 1px solid #e0b4b4;
+  border-radius: 6px;
+}
+
+.error-message:empty {
+  display: none;
 }

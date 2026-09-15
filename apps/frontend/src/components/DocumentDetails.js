@@ -137,7 +137,7 @@ export function renderDocumentDetails(app, doc, onBack) {
       onBack();
     } catch (error) {
       message.className = "error-message";
-      message.textContent = "Das Dokument konnte nicht zurückgestellt werden.";
+      message.textContent = "Das Dokument konnte nicht zurückgestellt werden: " + error.message;
       button.disabled = false;
     }
   });

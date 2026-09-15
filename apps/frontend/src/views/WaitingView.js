@@ -1,4 +1,4 @@
-import { api } from "../api";
+import { api } from "../api.js";
 
 const categoryLabels = {
   INVOICE: "Rechnung",
@@ -8,6 +8,7 @@ const categoryLabels = {
 };
 
 export async function renderWaitingView(app) {
+  const documents = await api.getDocuments("WAITING");
   app.innerHTML = `
     <section class="view">
       <h2>Warteposition</h2>
@@ -78,7 +79,7 @@ export async function renderWaitingView(app) {
           `Dokument "${doc.originalName}" wurde zurückgeholt.`;
       } catch (error) {
         message.textContent = error.message;
-        message.textContent = "Das Dokument konnte nicht zurückgeholt werden.";
+        message.textContent = "Das Dokument konnte nicht zurückgeholt werden: " + error.message;
         button.disabled = false;
       }
     });

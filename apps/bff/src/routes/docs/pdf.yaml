@@ -1,0 +1,40 @@
+paths:
+  /pdf/{id}:
+    get:
+      summary: Get PDF file from document ID
+      description: Retrieves the PDF file associated with the given document ID.
+      tags:
+        - PDF
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the document to get the pdf file from.
+      responses:
+        "200":
+          description: The PDF file associated with the given document ID.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: No 'id' path parameter provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No document found with the given ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

@@ -6,7 +6,7 @@ export const swaggerOptions = {
     openapi: "3.0.0",
     info: {
       title: "Intelligentes Postfach – API",
-      version: "1.0.0",
+      version: "1.1.0",
       description: "API Dokumentation",
     },
     servers: [

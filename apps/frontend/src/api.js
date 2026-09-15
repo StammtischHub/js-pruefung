@@ -8,9 +8,17 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(`API-Error: ${response.status} ${response.statusText}`);
-  }
+    if (response.status === 401) {
+      sessionStorage.removeItem("username");
+      window.setTimeout(() => {
+        window.dispatchEvent(new Event("session-expired"));
+      }, 0);
+    }
 
+    const error = new Error(`API-Error: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    throw error;
+  }
   return response.json();
 }
 

@@ -39,6 +39,18 @@ export const api = {
   identify,
   health: () => request("/health"),
   getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
+  waitDocuments: (documentIds) =>
+    request("/documents/wait", {
+      method: "PUT",
+      body: JSON.stringify({ documentIds }),
+    }),
+
+  continueDocuments: (documentIds) =>
+    request("/documents/continue", {
+      method: "PUT",
+      body: JSON.stringify({ documentIds }),
+    }),
+
   updateDocument: (id, metadata) =>
     request(`/documents/${encodeURIComponent(id)}`, {
       method: "PUT",

@@ -1,4 +1,5 @@
 import { api } from "../api.js";
+import { showToast } from "../components/Toast.js";
 
 const categoryLabels = {
   INVOICE: "Rechnung",
@@ -9,10 +10,10 @@ const categoryLabels = {
 
 export async function renderWaitingView(app) {
   const documents = await api.getDocuments("WAITING");
+
   app.innerHTML = `
     <section class="view">
       <h2>Warteposition</h2>
-      <p id="waiting-message" class="success-message"></p>
 
       <table id="waiting-table" class="document-table">
         <thead>
@@ -51,36 +52,54 @@ export async function renderWaitingView(app) {
       <td></td>
       <td></td>
       <td>
-        <button type="button" id="wait-document">
+        <button type="button" class="button continue-document">
           Zurückholen
-          </button>
+        </button>
       </td>
-      `;
+    `;
+
     row.cells[0].textContent = doc.originalName;
     row.cells[1].textContent = doc.state;
-    row.cells[2].textContent = categoryLabels[doc.classification?.kind] ?? "Unbekannt";
+    row.cells[2].textContent =
+      categoryLabels[doc.classification?.kind] ?? "Unbekannt";
 
-    const button = row.querySelector("button");
+    const button = row.querySelector(".continue-document");
 
     button.addEventListener("click", async () => {
-      const message = document.getElementById("waiting-message");
-      button.disabled = true;
-
       try {
+        button.disabled = true;
+        button.textContent = "Wird zurückgeholt...";
+
         const results = await api.continueDocuments([doc.id]);
         const result = results[0];
 
-        if (!result || result.status !== 200) {
-          throw new Error(result?.error);
+        if (!result) {
+          throw new Error("Keine Antwort für das Dokument erhalten.");
+        }
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (typeof result.status === "number" && result.status >= 400) {
+          throw new Error(`Zurückholen fehlgeschlagen: ${result.status}`);
         }
 
         await renderWaitingView(app);
-        document.getElementById("waiting-message").textContent =
-          `Dokument "${doc.originalName}" wurde zurückgeholt.`;
+
+        showToast(
+          `Dokument "${doc.originalName}" wurde zurück in die Inbox verschoben.`
+        );
       } catch (error) {
-        message.className = "error-message";
-        message.textContent = "Das Dokument konnte nicht zurückgeholt werden: " + error.message;
+        console.error("Continuing document failed:", error);
+
+        showToast(
+          "Das Dokument konnte nicht zurückgeholt werden.",
+          "error"
+        );
+
         button.disabled = false;
+        button.textContent = "Zurückholen";
       }
     });
 

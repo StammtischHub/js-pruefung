@@ -88,9 +88,11 @@ export function renderDocumentDetails(app, doc, onBack) {
         <strong>Confidence:</strong>
         ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
+
       <button type="button" id="wait-document">
-      Zurückstellen
+        Zurückstellen
       </button>
+
       <button type="button" id="edit-document">
         Metadaten bearbeiten
       </button>
@@ -115,30 +117,42 @@ export function renderDocumentDetails(app, doc, onBack) {
     doc.classification.docId.value;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
-  document.getElementById("wait-document").addEventListener("click", async () => {
-    const button = document.getElementById("wait-document");
-    const message = document.getElementById("save-message");
-    button.disabled = true;
 
+  const waitButton = document.getElementById("wait-document");
+
+  waitButton.addEventListener("click", async () => {
     try {
+      waitButton.disabled = true;
+      waitButton.textContent = "Wird zurückgestellt...";
+
       const results = await api.waitDocuments([doc.id]);
       const result = results[0];
 
-      if (!result || result.status !== 200) {
-        throw new Error(result?.error);
+      if (!result) {
+        throw new Error("Keine Antwort für das Dokument erhalten.");
       }
 
-      message.className = "success-message";
-      message.textContent = `Dokument "${doc.originalName}" wurde zurückgestellt.`;
-      button.textContent = "Zurückgestellt";
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
-      window.setTimeout(() => {
-        onBack();
-      }, 1200);
+      if (typeof result.status === "number" && result.status >= 400) {
+        throw new Error(`Zurückstellen fehlgeschlagen: ${result.status}`);
+      }
+
+      onBack();
+
+      showToast(`Dokument "${doc.originalName}" wurde zurückgestellt.`);
     } catch (error) {
-      message.className = "error-message";
-      message.textContent = "Das Dokument konnte nicht zurückgestellt werden: " + error.message;
-      button.disabled = false;
+      console.error("Waiting document failed:", error);
+
+      showToast(
+        "Das Dokument konnte nicht zurückgestellt werden.",
+        "error"
+      );
+
+      waitButton.disabled = false;
+      waitButton.textContent = "Zurückstellen";
     }
   });
 

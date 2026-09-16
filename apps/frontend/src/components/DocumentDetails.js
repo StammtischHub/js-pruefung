@@ -134,7 +134,13 @@ export function renderDocumentDetails(app, doc, onBack) {
         throw new Error(result?.error);
       }
 
-      onBack();
+      message.className = "success-message";
+      message.textContent = `Dokument "${doc.originalName}" wurde zurückgestellt.`;
+      button.textContent = "Zurückgestellt";
+
+      window.setTimeout(() => {
+        onBack();
+      }, 1200);
     } catch (error) {
       message.className = "error-message";
       message.textContent = "Das Dokument konnte nicht zurückgestellt werden: " + error.message;

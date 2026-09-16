@@ -14,7 +14,7 @@ export async function renderWaitingView(app) {
       <h2>Warteposition</h2>
       <p id="waiting-message" class="success-message"></p>
 
-      <table id="waiting-table">
+      <table id="waiting-table" class="document-table">
         <thead>
           <tr>
             <th>Dateiname</th>
@@ -78,7 +78,7 @@ export async function renderWaitingView(app) {
         document.getElementById("waiting-message").textContent =
           `Dokument "${doc.originalName}" wurde zurückgeholt.`;
       } catch (error) {
-        message.textContent = error.message;
+        message.className = "error-message";
         message.textContent = "Das Dokument konnte nicht zurückgeholt werden: " + error.message;
         button.disabled = false;
       }

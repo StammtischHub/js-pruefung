@@ -171,10 +171,17 @@ main {
   width: 3rem;
   min-width: 3rem;
   max-width: 3rem;
-  text-align: center;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  overflow: visible !important;
+  text-align: center !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
 .document-select-column input {
+  display: block;
+  margin: 0 auto;
   cursor: pointer;
 }
 

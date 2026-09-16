@@ -88,10 +88,7 @@ export function renderDocumentEditDialog(doc, onSave) {
     } catch (error) {
       console.error("Updating metadata failed:", error);
 
-      showToast(
-        "Metadaten konnten nicht gespeichert werden.",
-        "error"
-      );
+      showToast("Metadaten konnten nicht gespeichert werden.", "error");
     } finally {
       saveButton.disabled = false;
     }

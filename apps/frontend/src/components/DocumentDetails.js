@@ -107,14 +107,12 @@ export function renderDocumentDetails(app, doc, onBack) {
     </section>
   `;
 
-  document.getElementById("document-date-value").textContent =
-    doc.classification.docDateSic.value;
+  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
 
   document.getElementById("document-subject-value").textContent =
     doc.classification.docSubject.value;
 
-  document.getElementById("document-id-value").textContent =
-    doc.classification.docId.value;
+  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
 
@@ -146,10 +144,7 @@ export function renderDocumentDetails(app, doc, onBack) {
     } catch (error) {
       console.error("Waiting document failed:", error);
 
-      showToast(
-        "Das Dokument konnte nicht zurückgestellt werden.",
-        "error"
-      );
+      showToast("Das Dokument konnte nicht zurückgestellt werden.", "error");
 
       waitButton.disabled = false;
       waitButton.textContent = "Zurückstellen";
@@ -200,10 +195,7 @@ export function renderDocumentDetails(app, doc, onBack) {
     } catch (error) {
       console.error("Reclassify failed:", error);
 
-      showToast(
-        "Klassifizierung konnte nicht erneut durchgeführt werden.",
-        "error"
-      );
+      showToast("Klassifizierung konnte nicht erneut durchgeführt werden.", "error");
 
       reclassifyButton.disabled = false;
       reclassifyButton.textContent = "Klassifizierung wiederholen";
@@ -238,10 +230,7 @@ export function renderDocumentDetails(app, doc, onBack) {
     } catch (error) {
       console.error("Preparing document for deletion failed:", error);
 
-      showToast(
-        "Dokument konnte nicht zur Löschung vorgemerkt werden.",
-        "error"
-      );
+      showToast("Dokument konnte nicht zur Löschung vorgemerkt werden.", "error");
 
       deleteButton.disabled = false;
       deleteButton.textContent = "Löschen vormerken";

@@ -34,10 +34,7 @@ export function initDocumentUpload(input, button, status, onUploaded) {
       status.hidden = true;
       status.textContent = "";
 
-      showToast(
-        `„${file.name}“ konnte nicht hochgeladen werden.`,
-        "error"
-      );
+      showToast(`„${file.name}“ konnte nicht hochgeladen werden.`, "error");
 
       return;
     } finally {
@@ -51,10 +48,7 @@ export function initDocumentUpload(input, button, status, onUploaded) {
     } catch (error) {
       console.error("Die Liste konnte nicht aktualisiert werden:", error);
 
-      showToast(
-        "Upload erfolgreich, aber die Liste konnte nicht aktualisiert werden.",
-        "error"
-      );
+      showToast("Upload erfolgreich, aber die Liste konnte nicht aktualisiert werden.", "error");
     }
   });
 }

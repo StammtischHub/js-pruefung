@@ -112,9 +112,7 @@ export async function renderInboxView(app) {
     try {
       const results = await action(selectedIds);
 
-      const failedResults = results.filter(
-        (result) => result.status < 200 || result.status >= 300
-      );
+      const failedResults = results.filter((result) => result.status < 200 || result.status >= 300);
 
       const details = results.map((result) => {
         const name = result.document?.originalName ?? result.id;
@@ -131,19 +129,12 @@ export async function renderInboxView(app) {
       if (failedResults.length === 0) {
         showToast(successMessage, "success", details);
       } else {
-        showToast(
-          "Aktion teilweise fehlgeschlagen.",
-          "error",
-          details
-        );
+        showToast("Aktion teilweise fehlgeschlagen.", "error", details);
       }
     } catch (error) {
       console.error("Bulk-Aktion fehlgeschlagen:", error);
 
-      showToast(
-        "Die Aktion konnte nicht durchgeführt werden.",
-        "error"
-      );
+      showToast("Die Aktion konnte nicht durchgeführt werden.", "error");
 
       waitButton.disabled = false;
       deleteButton.disabled = false;
@@ -151,10 +142,7 @@ export async function renderInboxView(app) {
   }
 
   waitButton.addEventListener("click", () => {
-    runBulkAction(
-      api.waitDocuments,
-      "Dokumente erfolgreich zurückgestellt."
-    );
+    runBulkAction(api.waitDocuments, "Dokumente erfolgreich zurückgestellt.");
   });
 
   deleteButton.addEventListener("click", () => {

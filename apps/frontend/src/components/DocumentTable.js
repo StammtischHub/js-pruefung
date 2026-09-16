@@ -29,8 +29,8 @@ export function renderDocumentTable(container, documents, columns, options = {})
     <thead>
       <tr>
         ${
-    selectable
-      ? `
+          selectable
+            ? `
           <th class="document-select-column">
             <input
               type="checkbox"
@@ -39,8 +39,8 @@ export function renderDocumentTable(container, documents, columns, options = {})
             />
           </th>
         `
-      : ""
-  }
+            : ""
+        }
         ${columns.map((column) => `<th>${column.label}</th>`).join("")}
       </tr>
     </thead>
@@ -54,8 +54,7 @@ export function renderDocumentTable(container, documents, columns, options = {})
   function updateSelection() {
     if (selectAllCheckbox) {
       selectAllCheckbox.checked = selectedIds.size === documents.length;
-      selectAllCheckbox.indeterminate =
-        selectedIds.size > 0 && selectedIds.size < documents.length;
+      selectAllCheckbox.indeterminate = selectedIds.size > 0 && selectedIds.size < documents.length;
     }
 
     if (onSelectionChange) {

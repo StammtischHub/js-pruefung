@@ -43,8 +43,7 @@ export const api = {
 
   health: () => request("/health"),
 
-  getDocuments: (state) =>
-    request(`/documents/?state=${encodeURIComponent(state)}`),
+  getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
 
   updateDocument: (id, metadata) =>
     request(`/documents/${encodeURIComponent(id)}`, {
@@ -103,6 +102,5 @@ export const api = {
       }),
     }),
 
-  getNextDocument: () =>
-    request("/documents/next"),
+  getNextDocument: () => request("/documents/next"),
 };

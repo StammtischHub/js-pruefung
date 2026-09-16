@@ -21,8 +21,8 @@ header {
 }
 
 h1 {
-  font-size: 1.25rem;
   margin: 0;
+  font-size: 1.25rem;
 }
 
 .header-actions,
@@ -55,8 +55,8 @@ h1 {
 }
 
 #main-nav button.active {
-  background: #1a1a1a;
   color: #ffffff;
+  background: #1a1a1a;
   border-color: #1a1a1a;
 }
 
@@ -65,27 +65,25 @@ main {
 }
 
 .view {
+  padding: 1.5rem;
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 1.5rem;
 }
 
 .view h2 {
   margin-top: 0;
 }
 
-/* Dokumenttabellen */
-
 .document-table {
   width: 100%;
-  border-collapse: collapse;
   margin-top: 1rem;
+  border-collapse: collapse;
 }
 
 .document-table th {
-  text-align: left;
   padding: 0.75rem 1rem;
+  text-align: left;
   background: #f2f2f3;
   border-bottom: 2px solid #dcdcdc;
 }
@@ -106,11 +104,9 @@ main {
 .document-table-empty {
   margin-top: 1rem;
   padding: 1.5rem;
-  text-align: center;
   color: #666666;
+  text-align: center;
 }
-
-/* Mehrfachauswahl */
 
 .document-select-column {
   width: 3rem;
@@ -139,12 +135,6 @@ main {
 .bulk-actions span {
   margin-right: auto;
 }
-
-.waiting-actions {
-  margin: 1rem 0;
-}
-
-/* Toast-Meldungen */
 
 .toast {
   position: fixed;
@@ -178,8 +168,6 @@ main {
 .toast li {
   margin-top: 0.25rem;
 }
-
-/* Dokumentdetails */
 
 #detail-view p {
   margin: 1rem 0;
@@ -215,8 +203,6 @@ main {
   opacity: 0.6;
 }
 
-/* Confidence */
-
 .confidence {
   display: flex;
   align-items: center;
@@ -226,9 +212,9 @@ main {
 .confidence-bar {
   width: 125px;
   height: 8px;
+  overflow: hidden;
   background: #e5e5e5;
   border-radius: 4px;
-  overflow: hidden;
   transform: translateY(1px);
 }
 
@@ -248,39 +234,9 @@ main {
   gap: 0.75rem;
 }
 
-/* Upload */
-
 #upload-status {
   margin: 1rem 1.5rem 0;
 }
-
-/* Alte Inline-Meldungen */
-
-.success-message {
-  padding: 0.75rem 1rem;
-  color: #256029;
-  background: #edf7ed;
-  border: 1px solid #b7d8b9;
-  border-radius: 6px;
-}
-
-.success-message:empty {
-  display: none;
-}
-
-.error-message {
-  padding: 0.75rem 1rem;
-  color: #7a1f1f;
-  background: #f9eaea;
-  border: 1px solid #e0b4b4;
-  border-radius: 6px;
-}
-
-.error-message:empty {
-  display: none;
-}
-
-/* Login */
 
 #login-form {
   display: grid;

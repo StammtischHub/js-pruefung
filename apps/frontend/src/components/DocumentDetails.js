@@ -92,7 +92,7 @@ export function renderDocumentDetails(app, doc, onBack) {
         <strong>Confidence:</strong>
         ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
-      <button type="button" id="button">
+      <button type="button" id="wait-document">
       Zurückstellen
       </button>
       <button type="button" id="edit-document">

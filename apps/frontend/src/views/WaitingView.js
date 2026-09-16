@@ -51,7 +51,7 @@ export async function renderWaitingView(app) {
       <td></td>
       <td></td>
       <td>
-        <button type="button" id="button">
+        <button type="button" id="wait-document">
           Zurückholen
           </button>
       </td>

@@ -10,6 +10,7 @@ async function request(path, options = {}) {
   if (!response.ok) {
     if (response.status === 401) {
       sessionStorage.removeItem("username");
+
       window.setTimeout(() => {
         window.dispatchEvent(new Event("session-expired"));
       }, 0);
@@ -17,8 +18,10 @@ async function request(path, options = {}) {
 
     const error = new Error(`API-Error: ${response.status} ${response.statusText}`);
     error.status = response.status;
+
     throw error;
   }
+
   return response.json();
 }
 
@@ -37,31 +40,29 @@ async function identify(username) {
 
 export const api = {
   identify,
-  health: () => request("/health"),
-  getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
-  waitDocuments: (documentIds) =>
-    request("/documents/wait", {
-      method: "PUT",
-      body: JSON.stringify({ documentIds }),
-    }),
 
-  continueDocuments: (documentIds) =>
-    request("/documents/continue", {
-      method: "PUT",
-      body: JSON.stringify({ documentIds }),
-    }),
+  health: () => request("/health"),
+
+  getDocuments: (state) =>
+    request(`/documents/?state=${encodeURIComponent(state)}`),
 
   updateDocument: (id, metadata) =>
     request(`/documents/${encodeURIComponent(id)}`, {
       method: "PUT",
       body: JSON.stringify(metadata),
     }),
+
   uploadDocument: (file) => {
     const body = new FormData();
     body.append("file", file);
 
-    return request("/documents/", { method: "POST", headers: {}, body });
+    return request("/documents/", {
+      method: "POST",
+      headers: {},
+      body,
+    });
   },
+
   reclassifyDocument: (id) =>
     request("/documents/classify", {
       method: "POST",
@@ -77,4 +78,31 @@ export const api = {
         documentIds: [id],
       }),
     }),
+
+  waitDocuments: (documentIds) =>
+    request("/documents/wait", {
+      method: "PUT",
+      body: JSON.stringify({
+        documentIds,
+      }),
+    }),
+
+  continueDocuments: (documentIds) =>
+    request("/documents/continue", {
+      method: "PUT",
+      body: JSON.stringify({
+        documentIds,
+      }),
+    }),
+
+  prepareDocumentsForDeletion: (documentIds) =>
+    request("/documents/prep-for-deletion", {
+      method: "PUT",
+      body: JSON.stringify({
+        documentIds,
+      }),
+    }),
+
+  getNextDocument: () =>
+    request("/documents/next"),
 };

@@ -11,6 +11,9 @@ const categoryLabels = {
 };
 
 export function renderDocumentDetails(app, doc, onBack) {
+  const isInbox = doc.state === "INBOX";
+  const isProcessed = doc.state === "PROCESSED";
+
   app.innerHTML = `
     <section id="detail-view" class="view">
       <h2>Dokumentdetails</h2>
@@ -48,12 +51,18 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <p>
         <strong>Klassifizierungsart:</strong>
-        <span>${doc.classification.type}</span>
+        <span>${doc.classification?.type ?? "–"}</span>
       </p>
 
-      <button type="button" id="reclassify-document">
-        Klassifizierung wiederholen
-      </button>
+      ${
+        isInbox
+          ? `
+            <button type="button" id="reclassify-document">
+              Klassifizierung wiederholen
+            </button>
+          `
+          : ""
+      }
 
       <hr />
 
@@ -66,7 +75,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classification.docId.score)}
+        ${createConfidenceView(doc.classification?.docId?.score ?? 0)}
       </div>
 
       <p>
@@ -76,7 +85,7 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classification.docDateSic.score)}
+        ${createConfidenceView(doc.classification?.docDateSic?.score ?? 0)}
       </div>
 
       <p>
@@ -86,121 +95,186 @@ export function renderDocumentDetails(app, doc, onBack) {
 
       <div class="confidence-row">
         <strong>Confidence:</strong>
-        ${createConfidenceView(doc.classification.docSubject.score)}
+        ${createConfidenceView(doc.classification?.docSubject?.score ?? 0)}
       </div>
 
-      <button type="button" id="wait-document">
-        Zurückstellen
-      </button>
+      ${
+        isInbox
+          ? `
+            <button type="button" id="wait-document">
+              Zurückstellen
+            </button>
 
-      <button type="button" id="edit-document">
-        Metadaten bearbeiten
-      </button>
+            <button type="button" id="edit-document">
+              Metadaten bearbeiten
+            </button>
+          `
+          : ""
+      }
+
+      ${
+        isProcessed
+          ? `
+            <button type="button" id="move-to-inbox" class="button">
+              In Inbox verschieben
+            </button>
+          `
+          : ""
+      }
 
       <button type="button" id="mark-for-deletion">
         Löschen vormerken
       </button>
 
-      <button type="button" id="back-to-inbox">
-        Zurück zur Inbox
+      <button type="button" id="back-to-list">
+        Zurück
       </button>
     </section>
   `;
 
-  document.getElementById("document-date-value").textContent = doc.classification.docDateSic.value;
+  document.getElementById("document-date-value").textContent =
+    doc.classification?.docDateSic?.value ?? "–";
 
   document.getElementById("document-subject-value").textContent =
-    doc.classification.docSubject.value;
+    doc.classification?.docSubject?.value ?? "–";
 
-  document.getElementById("document-id-value").textContent = doc.classification.docId.value;
+  document.getElementById("document-id-value").textContent =
+    doc.classification?.docId?.value ?? "–";
 
-  document.getElementById("back-to-inbox").addEventListener("click", onBack);
+  document.getElementById("back-to-list").addEventListener("click", onBack);
 
   const waitButton = document.getElementById("wait-document");
 
-  waitButton.addEventListener("click", async () => {
-    try {
-      waitButton.disabled = true;
-      waitButton.textContent = "Wird zurückgestellt...";
+  if (waitButton) {
+    waitButton.addEventListener("click", async () => {
+      try {
+        waitButton.disabled = true;
+        waitButton.textContent = "Wird zurückgestellt...";
 
-      const results = await api.waitDocuments([doc.id]);
-      const result = results[0];
+        const results = await api.waitDocuments([doc.id]);
+        const result = results[0];
 
-      if (!result) {
-        throw new Error("Keine Antwort für das Dokument erhalten.");
+        if (!result) {
+          throw new Error("Keine Antwort für das Dokument erhalten.");
+        }
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (typeof result.status === "number" && result.status >= 400) {
+          throw new Error(`Zurückstellen fehlgeschlagen: ${result.status}`);
+        }
+
+        onBack();
+
+        showToast(`Dokument "${doc.originalName}" wurde zurückgestellt.`);
+      } catch (error) {
+        console.error("Waiting document failed:", error);
+
+        showToast("Das Dokument konnte nicht zurückgestellt werden.", "error");
+
+        waitButton.disabled = false;
+        waitButton.textContent = "Zurückstellen";
       }
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      if (typeof result.status === "number" && result.status >= 400) {
-        throw new Error(`Zurückstellen fehlgeschlagen: ${result.status}`);
-      }
-
-      onBack();
-
-      showToast(`Dokument "${doc.originalName}" wurde zurückgestellt.`);
-    } catch (error) {
-      console.error("Waiting document failed:", error);
-
-      showToast("Das Dokument konnte nicht zurückgestellt werden.", "error");
-
-      waitButton.disabled = false;
-      waitButton.textContent = "Zurückstellen";
-    }
-  });
-
-  document.getElementById("edit-document").addEventListener("click", () => {
-    renderDocumentEditDialog(doc, async (changes) => {
-      const updatedDocument = await api.updateDocument(doc.id, changes);
-
-      renderDocumentDetails(app, updatedDocument, onBack);
-
-      showToast("Metadaten erfolgreich gespeichert.");
     });
-  });
+  }
+
+  const editButton = document.getElementById("edit-document");
+
+  if (editButton) {
+    editButton.addEventListener("click", () => {
+      renderDocumentEditDialog(doc, async (changes) => {
+        const updatedDocument = await api.updateDocument(doc.id, changes);
+
+        renderDocumentDetails(app, updatedDocument, onBack);
+
+        showToast("Metadaten erfolgreich gespeichert.");
+      });
+    });
+  }
 
   const reclassifyButton = document.getElementById("reclassify-document");
 
-  reclassifyButton.addEventListener("click", async () => {
-    try {
-      reclassifyButton.disabled = true;
-      reclassifyButton.textContent = "Klassifizierung läuft...";
+  if (reclassifyButton) {
+    reclassifyButton.addEventListener("click", async () => {
+      try {
+        reclassifyButton.disabled = true;
+        reclassifyButton.textContent = "Klassifizierung läuft...";
 
-      const response = await api.reclassifyDocument(doc.id);
-      const result = Array.isArray(response) ? response[0] : response;
+        const response = await api.reclassifyDocument(doc.id);
 
-      if (!result) {
-        throw new Error("Keine Antwort für das Dokument erhalten.");
+        const result = Array.isArray(response) ? response[0] : response;
+
+        if (!result) {
+          throw new Error("Keine Antwort für das Dokument erhalten.");
+        }
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (typeof result.status === "number" && result.status >= 400) {
+          throw new Error(`Klassifizierung fehlgeschlagen: ${result.status}`);
+        }
+
+        const updatedDocument = result.document ?? result;
+
+        if (!updatedDocument?.id) {
+          throw new Error("Kein aktualisiertes Dokument erhalten.");
+        }
+
+        renderDocumentDetails(app, updatedDocument, onBack);
+
+        showToast("Klassifizierung erfolgreich wiederholt.");
+      } catch (error) {
+        console.error("Reclassify failed:", error);
+
+        showToast("Klassifizierung konnte nicht erneut durchgeführt werden.", "error");
+
+        reclassifyButton.disabled = false;
+        reclassifyButton.textContent = "Klassifizierung wiederholen";
       }
+    });
+  }
 
-      if (result.error) {
-        throw new Error(result.error);
+  const moveToInboxButton = document.getElementById("move-to-inbox");
+
+  if (moveToInboxButton) {
+    moveToInboxButton.addEventListener("click", async () => {
+      try {
+        moveToInboxButton.disabled = true;
+        moveToInboxButton.textContent = "Wird verschoben...";
+
+        const results = await api.continueDocuments([doc.id]);
+
+        const result = results[0];
+
+        if (!result) {
+          throw new Error("Keine Antwort für das Dokument erhalten.");
+        }
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (typeof result.status === "number" && result.status >= 400) {
+          throw new Error(`Verschieben fehlgeschlagen: ${result.status}`);
+        }
+
+        onBack();
+
+        showToast(`Dokument "${doc.originalName}" wurde in die Inbox verschoben.`);
+      } catch (error) {
+        console.error("Moving document to inbox failed:", error);
+
+        showToast("Das Dokument konnte nicht in die Inbox verschoben werden.", "error");
+
+        moveToInboxButton.disabled = false;
+        moveToInboxButton.textContent = "In Inbox verschieben";
       }
-
-      if (typeof result.status === "number" && result.status >= 400) {
-        throw new Error(`Klassifizierung fehlgeschlagen: ${result.status}`);
-      }
-
-      const updatedDocument = result.document ?? result;
-
-      if (!updatedDocument?.id) {
-        throw new Error("Kein aktualisiertes Dokument erhalten.");
-      }
-
-      renderDocumentDetails(app, updatedDocument, onBack);
-
-      showToast("Klassifizierung erfolgreich wiederholt.");
-    } catch (error) {
-      console.error("Reclassify failed:", error);
-
-      showToast("Klassifizierung konnte nicht erneut durchgeführt werden.", "error");
-
-      reclassifyButton.disabled = false;
-      reclassifyButton.textContent = "Klassifizierung wiederholen";
-    }
-  });
+    });
+  }
 
   const deleteButton = document.getElementById("mark-for-deletion");
 
@@ -210,6 +284,7 @@ export function renderDocumentDetails(app, doc, onBack) {
       deleteButton.textContent = "Wird vorgemerkt...";
 
       const response = await api.prepareForDeletion(doc.id);
+
       const result = Array.isArray(response) ? response[0] : response;
 
       if (!result) {

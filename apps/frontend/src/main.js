@@ -1,9 +1,9 @@
 import { renderInboxView } from "./views/InboxView.js";
-import { renderReviewView } from "./views/ReviewView.js";
 import { renderWaitingView } from "./views/WaitingView.js";
 import { renderTrashView } from "./views/TrashView.js";
 import { api } from "./api.js";
 import { initDocumentUpload } from "./components/DocumentUpload.js";
+import { renderProcessedView } from "./views/ProcessedView.js";
 
 const app = document.getElementById("app");
 let currentView = "inbox";
@@ -105,8 +105,8 @@ async function renderView(viewName) {
       await renderInboxView(app);
       break;
 
-    case "review":
-      await renderReviewView(app);
+    case "processed":
+      await renderProcessedView(app);
       break;
 
     case "waiting":

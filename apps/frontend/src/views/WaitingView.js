@@ -1,4 +1,6 @@
 import { api } from "../api.js";
+import { renderDocumentTable } from "../components/DocumentTable.js";
+import { showToast } from "../components/Toast.js";
 
 const categoryLabels = {
   INVOICE: "Rechnung",
@@ -7,83 +9,180 @@ const categoryLabels = {
   UNKNOWN: "Unbekannt",
 };
 
+async function getWaitingDocuments() {
+  return api.getDocuments("WAITING");
+}
+
+function getBulkResultDetails(results) {
+  return results.map((result) => {
+    const documentName = result.document?.originalName ?? result.id;
+
+    if (result.status >= 200 && result.status < 300) {
+      return `${documentName}: Erfolgreich`;
+    }
+
+    return `${documentName}: Fehler (${result.status})`;
+  });
+}
+
 export async function renderWaitingView(app) {
-  const documents = await api.getDocuments("WAITING");
+  const documents = await getWaitingDocuments();
+
+  const waitingDocuments = documents.filter((doc) => doc.state === "WAITING");
+
   app.innerHTML = `
     <section class="view">
       <h2>Warteposition</h2>
-      <p id="waiting-message" class="success-message"></p>
 
-      <table id="waiting-table" class="document-table">
-        <thead>
-          <tr>
-            <th>Dateiname</th>
-            <th>Status</th>
-            <th>Kategorie</th>
-            <th>Aktionen</th>
-          </tr>
-        </thead>
+      <div id="waiting-bulk-actions" class="bulk-actions" hidden>
+        <span id="waiting-selection-count"></span>
 
-        <tbody id="waiting-list"></tbody>
-      </table>
+        <button type="button" id="bulk-continue" class="button">
+          Zurückholen
+        </button>
 
-      <p id="waiting-empty" hidden>
-        Keine Dokumente in der Warteposition.
-      </p>
+        <button type="button" id="bulk-delete-waiting" class="button">
+          Löschen vormerken
+        </button>
+      </div>
+
+      <div id="waiting-list"></div>
     </section>
   `;
 
   const waitingList = document.getElementById("waiting-list");
-  const waitingTable = document.getElementById("waiting-table");
-  const waitingEmpty = document.getElementById("waiting-empty");
+  const bulkActions = document.getElementById("waiting-bulk-actions");
+  const selectionCount = document.getElementById("waiting-selection-count");
+  const continueButton = document.getElementById("bulk-continue");
+  const deleteButton = document.getElementById("bulk-delete-waiting");
 
-  if (documents.length === 0) {
-    waitingTable.hidden = true;
-    waitingEmpty.hidden = false;
-    return;
-  }
+  let selectedIds = [];
 
-  documents.forEach((doc) => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>
-        <button type="button" id="wait-document">
+  const columns = [
+    {
+      label: "Dateiname",
+      value: (doc) => doc.originalName,
+    },
+    {
+      label: "Status",
+      value: (doc) => doc.state,
+    },
+    {
+      label: "Kategorie",
+      value: (doc) => categoryLabels[doc.classification?.kind] ?? "Unbekannt",
+    },
+    {
+      label: "Aktionen",
+      render: (doc) => `
+        <button
+          type="button"
+          class="button continue-document"
+          data-document-id="${doc.id}"
+        >
           Zurückholen
-          </button>
-      </td>
-      `;
-    row.cells[0].textContent = doc.originalName;
-    row.cells[1].textContent = doc.state;
-    row.cells[2].textContent = categoryLabels[doc.classification?.kind] ?? "Unbekannt";
+        </button>
+      `,
+    },
+  ];
 
-    const button = row.querySelector("button");
+  renderDocumentTable(waitingList, waitingDocuments, columns, {
+    tableId: "waiting-table",
+    emptyText: "Keine Dokumente in der Warteposition.",
+    selectable: true,
 
+    onSelectionChange: (ids) => {
+      selectedIds = ids;
+
+      bulkActions.hidden = selectedIds.length === 0;
+
+      selectionCount.textContent =
+        selectedIds.length === 1
+          ? "1 Dokument ausgewählt"
+          : `${selectedIds.length} Dokumente ausgewählt`;
+    },
+  });
+
+  document.querySelectorAll(".continue-document").forEach((button) => {
     button.addEventListener("click", async () => {
-      const message = document.getElementById("waiting-message");
-      button.disabled = true;
+      const documentId = button.dataset.documentId;
+
+      const doc = waitingDocuments.find((document) => document.id === documentId);
 
       try {
-        const results = await api.continueDocuments([doc.id]);
+        button.disabled = true;
+        button.textContent = "Wird zurückgeholt...";
+
+        const results = await api.continueDocuments([documentId]);
         const result = results[0];
 
-        if (!result || result.status !== 200) {
-          throw new Error(result?.error);
+        if (!result) {
+          throw new Error("Keine Antwort für das Dokument erhalten.");
+        }
+
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        if (typeof result.status === "number" && result.status >= 400) {
+          throw new Error(`Zurückholen fehlgeschlagen: ${result.status}`);
         }
 
         await renderWaitingView(app);
-        document.getElementById("waiting-message").textContent =
-          `Dokument "${doc.originalName}" wurde zurückgeholt.`;
+
+        showToast(
+          `Dokument "${doc?.originalName ?? documentId}" wurde zurück in die Inbox verschoben.`
+        );
       } catch (error) {
-        message.className = "error-message";
-        message.textContent = "Das Dokument konnte nicht zurückgeholt werden: " + error.message;
+        console.error("Continuing document failed:", error);
+
+        showToast("Das Dokument konnte nicht zurückgeholt werden.", "error");
+
         button.disabled = false;
+        button.textContent = "Zurückholen";
       }
     });
+  });
 
-    waitingList.appendChild(row);
+  async function runBulkAction(action, successMessage) {
+    if (selectedIds.length === 0) {
+      return;
+    }
+
+    continueButton.disabled = true;
+    deleteButton.disabled = true;
+
+    try {
+      const results = await action(selectedIds);
+
+      const failedResults = results.filter((result) => result.status < 200 || result.status >= 300);
+
+      const details = getBulkResultDetails(results);
+
+      await renderWaitingView(app);
+
+      if (failedResults.length === 0) {
+        showToast(successMessage, "success", details);
+      } else {
+        showToast("Aktion teilweise fehlgeschlagen.", "error", details);
+      }
+    } catch (error) {
+      console.error("Bulk-Aktion fehlgeschlagen:", error);
+
+      showToast("Die Aktion konnte nicht durchgeführt werden.", "error");
+
+      continueButton.disabled = false;
+      deleteButton.disabled = false;
+    }
+  }
+
+  continueButton.addEventListener("click", () => {
+    runBulkAction(api.continueDocuments, "Dokumente erfolgreich zurück in die Inbox verschoben.");
+  });
+
+  deleteButton.addEventListener("click", () => {
+    runBulkAction(
+      api.prepareDocumentsForDeletion,
+      "Dokumente erfolgreich zur Löschung vorgemerkt."
+    );
   });
 }

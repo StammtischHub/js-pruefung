@@ -1,6 +1,7 @@
 import { api } from "../api.js";
 import { createConfidenceView } from "./ConfidenceView.js";
 import { renderDocumentEditDialog } from "./DocumentEditDialog.js";
+import { showToast } from "./Toast.js";
 
 const categoryLabels = {
   INVOICE: "Rechnung",
@@ -13,7 +14,6 @@ export function renderDocumentDetails(app, doc, onBack) {
   app.innerHTML = `
     <section id="detail-view" class="view">
       <h2>Dokumentdetails</h2>
-      <p id="save-message" class="success-message"></p>
 
       <h3>Dokument</h3>
 
@@ -55,10 +55,6 @@ export function renderDocumentDetails(app, doc, onBack) {
         Klassifizierung wiederholen
       </button>
 
-      <p id="reclassify-error" hidden>
-        Klassifizierung konnte nicht erneut durchgeführt werden.
-      </p>
-
       <hr />
 
       <h3>Erkannte Metadaten</h3>
@@ -92,9 +88,11 @@ export function renderDocumentDetails(app, doc, onBack) {
         <strong>Confidence:</strong>
         ${createConfidenceView(doc.classification.docSubject.score)}
       </div>
+
       <button type="button" id="wait-document">
-      Zurückstellen
+        Zurückstellen
       </button>
+
       <button type="button" id="edit-document">
         Metadaten bearbeiten
       </button>
@@ -102,10 +100,6 @@ export function renderDocumentDetails(app, doc, onBack) {
       <button type="button" id="mark-for-deletion">
         Löschen vormerken
       </button>
-
-      <p id="delete-error" hidden>
-        Dokument konnte nicht zur Löschung vorgemerkt werden.
-      </p>
 
       <button type="button" id="back-to-inbox">
         Zurück zur Inbox
@@ -121,49 +115,56 @@ export function renderDocumentDetails(app, doc, onBack) {
   document.getElementById("document-id-value").textContent = doc.classification.docId.value;
 
   document.getElementById("back-to-inbox").addEventListener("click", onBack);
-  document.getElementById("wait-document").addEventListener("click", async () => {
-    const button = document.getElementById("wait-document");
-    const message = document.getElementById("save-message");
-    button.disabled = true;
 
+  const waitButton = document.getElementById("wait-document");
+
+  waitButton.addEventListener("click", async () => {
     try {
+      waitButton.disabled = true;
+      waitButton.textContent = "Wird zurückgestellt...";
+
       const results = await api.waitDocuments([doc.id]);
       const result = results[0];
 
-      if (!result || result.status !== 200) {
-        throw new Error(result?.error);
+      if (!result) {
+        throw new Error("Keine Antwort für das Dokument erhalten.");
       }
 
-      message.className = "success-message";
-      message.textContent = `Dokument "${doc.originalName}" wurde zurückgestellt.`;
-      button.textContent = "Zurückgestellt";
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
-      window.setTimeout(() => {
-        onBack();
-      }, 1200);
+      if (typeof result.status === "number" && result.status >= 400) {
+        throw new Error(`Zurückstellen fehlgeschlagen: ${result.status}`);
+      }
+
+      onBack();
+
+      showToast(`Dokument "${doc.originalName}" wurde zurückgestellt.`);
     } catch (error) {
-      message.className = "error-message";
-      message.textContent = "Das Dokument konnte nicht zurückgestellt werden: " + error.message;
-      button.disabled = false;
+      console.error("Waiting document failed:", error);
+
+      showToast("Das Dokument konnte nicht zurückgestellt werden.", "error");
+
+      waitButton.disabled = false;
+      waitButton.textContent = "Zurückstellen";
     }
   });
 
   document.getElementById("edit-document").addEventListener("click", () => {
     renderDocumentEditDialog(doc, async (changes) => {
-      const updateDocument = await api.updateDocument(doc.id, changes);
+      const updatedDocument = await api.updateDocument(doc.id, changes);
 
-      renderDocumentDetails(app, updateDocument, onBack);
+      renderDocumentDetails(app, updatedDocument, onBack);
 
-      document.getElementById("save-message").textContent = "Metadaten erfolgreich gespeichert!";
+      showToast("Metadaten erfolgreich gespeichert.");
     });
   });
 
   const reclassifyButton = document.getElementById("reclassify-document");
-  const reclassifyError = document.getElementById("reclassify-error");
 
   reclassifyButton.addEventListener("click", async () => {
     try {
-      reclassifyError.hidden = true;
       reclassifyButton.disabled = true;
       reclassifyButton.textContent = "Klassifizierung läuft...";
 
@@ -189,21 +190,22 @@ export function renderDocumentDetails(app, doc, onBack) {
       }
 
       renderDocumentDetails(app, updatedDocument, onBack);
+
+      showToast("Klassifizierung erfolgreich wiederholt.");
     } catch (error) {
       console.error("Reclassify failed:", error);
 
-      reclassifyError.hidden = false;
+      showToast("Klassifizierung konnte nicht erneut durchgeführt werden.", "error");
+
       reclassifyButton.disabled = false;
       reclassifyButton.textContent = "Klassifizierung wiederholen";
     }
   });
 
   const deleteButton = document.getElementById("mark-for-deletion");
-  const deleteError = document.getElementById("delete-error");
 
   deleteButton.addEventListener("click", async () => {
     try {
-      deleteError.hidden = true;
       deleteButton.disabled = true;
       deleteButton.textContent = "Wird vorgemerkt...";
 
@@ -223,10 +225,13 @@ export function renderDocumentDetails(app, doc, onBack) {
       }
 
       onBack();
+
+      showToast("Dokument wurde zur Löschung vorgemerkt.");
     } catch (error) {
       console.error("Preparing document for deletion failed:", error);
 
-      deleteError.hidden = false;
+      showToast("Dokument konnte nicht zur Löschung vorgemerkt werden.", "error");
+
       deleteButton.disabled = false;
       deleteButton.textContent = "Löschen vormerken";
     }

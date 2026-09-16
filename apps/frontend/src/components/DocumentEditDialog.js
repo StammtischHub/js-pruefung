@@ -1,46 +1,50 @@
+import { showToast } from "./Toast.js";
+
 export function renderDocumentEditDialog(doc, onSave) {
   const dialog = document.createElement("dialog");
 
   dialog.innerHTML = `
-        <form id ="document-edit-form">
-            <h2>Metadaten bearbeiten</h2>
+    <form id="document-edit-form">
+      <h2>Metadaten bearbeiten</h2>
 
-            <label for="edit-category">
-            Kategorie
-            </label>
-            <select id="edit-category" required>
-                <option value="INVOICE">Rechnung</option>
-                <option value="STATEMENT">Kontoauszug</option>
-                <option value="LETTER">Brief</option>
-                <option value="UNKNOWN">Unbekannt</option>
-            </select>
+      <label for="edit-category">
+        Kategorie
+      </label>
 
-            <label for="edit-doc-id">
-            Dokument-ID
-            </label>
-            <input id="edit-doc-id" type="text" required />
+      <select id="edit-category" required>
+        <option value="INVOICE">Rechnung</option>
+        <option value="STATEMENT">Kontoauszug</option>
+        <option value="LETTER">Brief</option>
+        <option value="UNKNOWN">Unbekannt</option>
+      </select>
 
-            <label for="edit-doc-date">
-            Dokumentdatum
-            </label>
-            <input id="edit-doc-date" type="text" required />
+      <label for="edit-doc-id">
+        Dokument-ID
+      </label>
 
-            <label for="edit-doc-subject">
-            Betreff
-            </label>
-            <input id="edit-doc-subject" type="text" required />
+      <input id="edit-doc-id" type="text" required />
 
-            <p id="edit-message"></p>
+      <label for="edit-doc-date">
+        Dokumentdatum
+      </label>
 
-            <button type="button" id="cancel-edit">
-                Abbrechen
-            </button>
+      <input id="edit-doc-date" type="text" required />
 
-            <button type="submit" id="save-document">
-                Speichern
-            </button>
-        </form>
-    `;
+      <label for="edit-doc-subject">
+        Betreff
+      </label>
+
+      <input id="edit-doc-subject" type="text" required />
+
+      <button type="button" id="cancel-edit">
+        Abbrechen
+      </button>
+
+      <button type="submit" id="save-document">
+        Speichern
+      </button>
+    </form>
+  `;
 
   document.body.appendChild(dialog);
 
@@ -51,7 +55,6 @@ export function renderDocumentEditDialog(doc, onSave) {
   const docSubjectInput = document.getElementById("edit-doc-subject");
   const cancelButton = document.getElementById("cancel-edit");
   const saveButton = document.getElementById("save-document");
-  const message = document.getElementById("edit-message");
 
   categoryInput.value = doc.classification.kind;
   docIdInput.value = doc.classification.docId.value;
@@ -83,8 +86,9 @@ export function renderDocumentEditDialog(doc, onSave) {
 
       dialog.close();
     } catch (error) {
-      message.textContent = error.message;
-      message.className = "error-message";
+      console.error("Updating metadata failed:", error);
+
+      showToast("Metadaten konnten nicht gespeichert werden.", "error");
     } finally {
       saveButton.disabled = false;
     }

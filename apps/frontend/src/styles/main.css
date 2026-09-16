@@ -115,9 +115,7 @@ main {
 #back-to-inbox,
 #edit-document,
 #reclassify-document,
-#mark-for-deletion,
-#wait-document,
-#continue-document {
+#mark-for-deletion {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   border: 1px solid #d0d0d0;
@@ -129,18 +127,14 @@ main {
 #back-to-inbox:hover,
 #edit-document:hover,
 #reclassify-document:hover,
-#mark-for-deletion:hover,
-#wait-document:hover,
-#continue-document:hover {
+#mark-for-deletion:hover {
   background: #f0f0f0;
 }
 
 #back-to-inbox:disabled,
 #edit-document:disabled,
 #reclassify-document:disabled,
-#mark-for-deletion:disabled,
-#wait-document:disabled,
-#continue-document:disabled {
+#mark-for-deletion:disabled {
   cursor: wait;
   opacity: 0.6;
 }

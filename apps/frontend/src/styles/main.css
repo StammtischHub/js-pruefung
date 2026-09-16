@@ -135,7 +135,9 @@ main {
 
 .document-table th {
   padding: 0.75rem 1rem;
+  overflow: hidden;
   text-align: left;
+  text-overflow: ellipsis;
   white-space: nowrap;
   background: #f2f2f3;
   border-bottom: 2px solid #dcdcdc;
@@ -143,6 +145,8 @@ main {
 
 .document-table td {
   padding: 0.75rem 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   background: #ffffff;
   border-bottom: 1px solid #e5e5e5;
@@ -165,6 +169,8 @@ main {
 
 .document-select-column {
   width: 3rem;
+  min-width: 3rem;
+  max-width: 3rem;
   text-align: center;
 }
 
@@ -270,9 +276,11 @@ main {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .confidence-bar {
+  flex: 0 1 125px;
   width: 125px;
   height: 8px;
   overflow: hidden;

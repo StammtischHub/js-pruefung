@@ -30,8 +30,8 @@ router.post(
     }
 
     const document = await Document.forNewFile(req.file);
-    const updatedDocument = await addEditorToDocuments(document.id, editor);
-    return res.status(201).json(updatedDocument);
+    const updatedDocument = await addEditorToDocuments([document.id], editor);
+    return res.status(201).json(updatedDocument.pop());
   })
 );
 

@@ -1,3 +1,5 @@
+import { createDocumentPreview } from "../components/DocumentPreview.js";
+import { renderDocumentEditDialog } from "../components/DocumentEditDialog.js";
 import { api } from "../api.js";
 import { renderDocumentDetails } from "../components/DocumentDetails.js";
 import { createConfidenceView } from "../components/ConfidenceView.js";
@@ -23,6 +25,9 @@ export async function renderInboxView(app) {
   app.innerHTML = `
     <section class="view">
       <h2>Inbox</h2>
+      <p>Dokument auswählen, um Kategorie und Metadaten zu prüfen.</p>
+      <p>Confidence zeigt den niedrigsten Wert der drei erkannten Metadatenfelder.</p>
+      <button class="button" type="button" id="inbox-refresh">Aktualisieren</button>
 
       <div id="inbox-bulk-actions" class="bulk-actions" hidden>
         <span id="inbox-selection-count"></span>
@@ -46,12 +51,56 @@ export async function renderInboxView(app) {
   const waitButton = document.getElementById("bulk-wait");
   const deleteButton = document.getElementById("bulk-delete");
 
+  const section = app.querySelector("section");
+  const refreshButton = section.querySelector("#inbox-refresh");
+  refreshButton.addEventListener("click", async () => {
+    refreshButton.disabled = true;
+    try {
+      await renderInboxView(app);
+    } catch (error) {
+      console.error("Inbox konnte nicht geladen werden:", error);
+      showToast("Die Inbox konnte nicht aktualisiert werden.", "error");
+    } finally {
+      refreshButton.disabled = false;
+    }
+  });
+
+  function openCorrection(doc) {
+    renderDocumentEditDialog(doc, async (changes) => {
+      await api.reviewDocument(doc.id, changes);
+      showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
+      if (section.isConnected) {
+        try {
+          await renderInboxView(app);
+        } catch (error) {
+          console.error("Inbox konnte nicht aktualisiert werden:", error);
+          showToast(
+            "Prüfung abgeschlossen, aber die Inbox konnte nicht aktualisiert werden.",
+            "error"
+          );
+        }
+      }
+    });
+  }
+
   let selectedIds = [];
 
   const columns = [
     {
       label: "Dateiname",
-      value: (doc) => doc.originalName,
+      render: (doc) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "document-name-button";
+        button.textContent = doc.originalName;
+        button.title = "Dokument prüfen";
+        button.addEventListener("click", () => openCorrection(doc));
+        return button;
+      },
+    },
+    {
+      label: "Vorschau",
+      render: createDocumentPreview,
     },
     {
       label: "Status",
@@ -63,14 +112,14 @@ export async function renderInboxView(app) {
     },
     {
       label: "Confidence",
-      render: (doc) =>
-        createConfidenceView(
-          Math.min(
-            doc.classification?.docId?.score ?? 0,
-            doc.classification?.docDateSic?.score ?? 0,
-            doc.classification?.docSubject?.score ?? 0
-          )
-        ),
+      render: (doc) => {
+        const scores = ["docId", "docDateSic", "docSubject"].map(
+          (field) => doc.classification?.[field]?.score
+        );
+        return scores.every((score) => Number.isFinite(score) && score >= 0 && score <= 1)
+          ? createConfidenceView(Math.min(...scores))
+          : "Nicht verfügbar";
+      },
     },
     {
       label: "Klassifizierungsart",
@@ -96,7 +145,7 @@ export async function renderInboxView(app) {
 
     onRowClick: (doc) => {
       renderDocumentDetails(app, doc, () => {
-        renderInboxView(app);
+        return renderInboxView(app);
       });
     },
   });

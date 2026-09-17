@@ -28,4 +28,4 @@ docker-compose*.yml
 README.md
 docs
 
-data
+apps/bff/data

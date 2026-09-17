@@ -44,6 +44,6 @@ export default [
   prettierConfig,
 
   {
-    ignores: ["**/node_modules/**", "data/**", "**/dist/**"],
+    ignores: ["**/node_modules/**", "apps/bff/data/**", "**/dist/**"],
   },
 ];

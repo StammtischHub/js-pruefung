@@ -1,8 +1,8 @@
 .idea
 .vscode*
-data/*/*
-data/metadata.json
-!data/**/.gitkeep
+apps/bff/data/*/*
+apps/bff/data/metadata.json
+!apps/bff/data/**/.gitkeep
 
 # Logs
 logs

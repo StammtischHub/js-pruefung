@@ -115,10 +115,6 @@ export function renderDocumentDetails(app, doc, onBack) {
       ${
         isProcessed
           ? `
-            <button type="button" id="edit-document">
-              Metadaten bearbeiten
-            </button>
-
             <button type="button" id="move-to-inbox" class="button">
               In Inbox verschieben
             </button>
@@ -189,30 +185,17 @@ export function renderDocumentDetails(app, doc, onBack) {
   if (editButton) {
     editButton.addEventListener("click", () => {
       renderDocumentEditDialog(doc, async (changes) => {
-        if (isInbox) {
-          await api.reviewDocument(doc.id, changes);
-
-          showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
-
-          try {
-            await onBack();
-          } catch (error) {
-            console.error("Liste konnte nicht aktualisiert werden:", error);
-
-            showToast(
-              "Prüfung abgeschlossen, aber die Liste konnte nicht aktualisiert werden.",
-              "error"
-            );
-          }
-
-          return;
+        await api.reviewDocument(doc.id, changes);
+        showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
+        try {
+          await onBack();
+        } catch (error) {
+          console.error("Liste konnte nicht aktualisiert werden:", error);
+          showToast(
+            "Prüfung abgeschlossen, aber die Liste konnte nicht aktualisiert werden.",
+            "error"
+          );
         }
-
-        const updatedDocument = await api.updateDocument(doc.id, changes);
-
-        renderDocumentDetails(app, updatedDocument, onBack);
-
-        showToast("Metadaten erfolgreich gespeichert.");
       });
     });
   }

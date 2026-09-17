@@ -1,5 +1,5 @@
 import path from "node:path";
-import { bffAppRoot, projectRoot } from "./utils/pathHelper.js";
+import { bffAppRoot } from "./utils/pathHelper.js";
 
 export const swaggerOptions = {
   swaggerDefinition: {
@@ -25,14 +25,14 @@ export const config = {
     process.env.CLASSIFICATION_SERVICE_URL || "http://localhost:8080/api/v1/classify/",
 
   paths: {
-    scanner: path.join(projectRoot, "data", "scanner"),
-    inbox: path.join(projectRoot, "data", "inbox"),
-    waiting: path.join(projectRoot, "data", "waiting"),
-    processed: path.join(projectRoot, "data", "processed"),
-    trash: path.join(projectRoot, "data", "trash"),
+    scanner: path.join(bffAppRoot, "data", "scanner"),
+    inbox: path.join(bffAppRoot, "data", "inbox"),
+    waiting: path.join(bffAppRoot, "data", "waiting"),
+    processed: path.join(bffAppRoot, "data", "processed"),
+    trash: path.join(bffAppRoot, "data", "trash"),
   },
 
-  metadataFile: path.join(projectRoot, "data", "metadata.json"),
+  metadataFile: path.join(bffAppRoot, "data", "metadata.json"),
 
   confidenceThreshold: 0.6,
 

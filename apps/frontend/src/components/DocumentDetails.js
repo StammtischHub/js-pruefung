@@ -184,22 +184,53 @@ export function renderDocumentDetails(app, doc, onBack) {
     });
   }
 
+  function openCorrection(documentToReview, openNextByDefault = false) {
+    renderDocumentEditDialog(
+      documentToReview,
+      async (changes, openNextDocument) => {
+        await api.reviewDocument(documentToReview.id, changes);
+
+        if (openNextDocument) {
+          const nextDocument = await api.getNextDocument();
+
+          await onBack();
+
+          if (nextDocument?.id) {
+            window.setTimeout(() => {
+              openCorrection(nextDocument, true);
+            }, 0);
+
+            showToast("Prüfung abgeschlossen. Das nächste Dokument wird geöffnet.");
+          } else {
+            showToast("Prüfung abgeschlossen. Keine weiteren Dokumente zu prüfen.");
+          }
+
+          return;
+        }
+
+        await onBack();
+
+        showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
+      },
+      openNextByDefault
+    );
+  }
+
   const editButton = document.getElementById("edit-document");
 
   if (editButton) {
     editButton.addEventListener("click", () => {
+      if (isInbox) {
+        openCorrection(doc);
+        return;
+      }
+
       renderDocumentEditDialog(doc, async (changes) => {
-        await api.reviewDocument(doc.id, changes);
-        showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
-        try {
-          await onBack();
-        } catch (error) {
-          console.error("Liste konnte nicht aktualisiert werden:", error);
-          showToast(
-            "Prüfung abgeschlossen, aber die Liste konnte nicht aktualisiert werden.",
-            "error"
-          );
-        }
+        const updatedDocument = await api.updateDocument(doc.id, changes);
+
+        renderDocumentDetails(app, updatedDocument, onBack);
+
+        showToast("Metadaten erfolgreich gespeichert.");
       });
     });
   }

@@ -17,7 +17,7 @@ async function getInboxDocuments() {
   return api.getDocuments("INBOX");
 }
 
-export async function renderInboxView(app) {
+export async function renderInboxView(app, documentToOpen = null, openNextByDefault = false) {
   const documents = await getInboxDocuments();
 
   const inboxDocuments = documents.filter((doc) => doc.state === "INBOX");
@@ -53,8 +53,10 @@ export async function renderInboxView(app) {
 
   const section = app.querySelector("section");
   const refreshButton = section.querySelector("#inbox-refresh");
+
   refreshButton.addEventListener("click", async () => {
     refreshButton.disabled = true;
+
     try {
       await renderInboxView(app);
     } catch (error) {
@@ -65,22 +67,45 @@ export async function renderInboxView(app) {
     }
   });
 
-  function openCorrection(doc) {
-    renderDocumentEditDialog(doc, async (changes) => {
-      await api.reviewDocument(doc.id, changes);
-      showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
-      if (section.isConnected) {
-        try {
-          await renderInboxView(app);
-        } catch (error) {
-          console.error("Inbox konnte nicht aktualisiert werden:", error);
-          showToast(
-            "Prüfung abgeschlossen, aber die Inbox konnte nicht aktualisiert werden.",
-            "error"
-          );
+  function openCorrection(doc, keepOpenNextSelected = false) {
+    renderDocumentEditDialog(
+      doc,
+      async (changes, openNextDocument) => {
+        await api.reviewDocument(doc.id, changes);
+
+        if (openNextDocument) {
+          const nextDocument = await api.getNextDocument();
+
+          if (section.isConnected) {
+            await renderInboxView(app, nextDocument?.id ? nextDocument : null, true);
+          }
+
+          if (nextDocument?.id) {
+            showToast("Prüfung abgeschlossen. Das nächste Dokument wird geöffnet.");
+          } else {
+            showToast("Prüfung abgeschlossen. Keine weiteren Dokumente zu prüfen.");
+          }
+
+          return;
         }
-      }
-    });
+
+        showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
+
+        if (section.isConnected) {
+          try {
+            await renderInboxView(app);
+          } catch (error) {
+            console.error("Inbox konnte nicht aktualisiert werden:", error);
+
+            showToast(
+              "Prüfung abgeschlossen, aber die Inbox konnte nicht aktualisiert werden.",
+              "error"
+            );
+          }
+        }
+      },
+      keepOpenNextSelected
+    );
   }
 
   let selectedIds = [];
@@ -200,4 +225,10 @@ export async function renderInboxView(app) {
       "Dokumente erfolgreich zur Löschung vorgemerkt."
     );
   });
+
+  if (documentToOpen?.id) {
+    window.setTimeout(() => {
+      openCorrection(documentToOpen, openNextByDefault);
+    }, 0);
+  }
 }

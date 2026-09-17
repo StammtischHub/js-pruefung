@@ -40,15 +40,15 @@ export function renderDocumentEditDialog(doc, onSave, openNextByDefault = false)
       <input id="edit-doc-subject" type="text" required />
 
       ${
-    isInbox
-      ? `
+        isInbox
+          ? `
             <label for="open-next-document">
               <input id="open-next-document" type="checkbox" />
               Nächstes Dokument öffnen
             </label>
           `
-      : ""
-  }
+          : ""
+      }
 
       <button type="button" id="cancel-edit">
         Abbrechen

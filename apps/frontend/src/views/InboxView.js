@@ -77,11 +77,7 @@ export async function renderInboxView(app, documentToOpen = null, openNextByDefa
           const nextDocument = await api.getNextDocument();
 
           if (section.isConnected) {
-            await renderInboxView(
-              app,
-              nextDocument?.id ? nextDocument : null,
-              true
-            );
+            await renderInboxView(app, nextDocument?.id ? nextDocument : null, true);
           }
 
           if (nextDocument?.id) {

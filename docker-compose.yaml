@@ -4,7 +4,7 @@ services:
     pull_policy: always
     restart: unless-stopped
     volumes:
-      - ./data/scanner:/inbox
+      - ./apps/bff/data/scanner:/inbox
 
   pdfclassifier-api-mock:
     image: ghcr.io/thst71/pdfclassifier-api-mock:v1_1_0
@@ -24,7 +24,7 @@ services:
       - scanner-mock
       - pdfclassifier-api-mock
     volumes:
-      - ./data:/app/data
+      - ./apps/bff/data:/app/apps/bff/data
     environment:
       NODE_ENV: production
       PORT: 4000

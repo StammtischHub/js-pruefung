@@ -22,16 +22,15 @@ router.post(
   "/",
   requireIdentity,
   asyncHandler(async (req, res) => {
-    const editor = req.username;
+    const uploader = req.username;
     await pdfUpload(req, res);
 
     if (!req.file) {
       throw new AppError("No file received.", 400);
     }
 
-    const document = await Document.forNewFile(req.file);
-    const updatedDocument = await addEditorToDocuments(document.id, editor);
-    return res.status(201).json(updatedDocument);
+    const document = await Document.forNewFile(req.file, uploader);
+    return res.status(201).json(document);
   })
 );
 

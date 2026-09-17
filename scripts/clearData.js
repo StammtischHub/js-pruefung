@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 
-const dataDir = path.resolve(__dirname, "..", "data");
+const dataDir = path.resolve(__dirname, "..", "apps", "bff", "data");
 
 if (!fs.existsSync(dataDir)) {
   console.error(`Fehler: Verzeichnis nicht gefunden: ${dataDir}`);

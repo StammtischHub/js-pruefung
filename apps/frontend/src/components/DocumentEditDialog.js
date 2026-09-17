@@ -77,12 +77,23 @@ export function renderDocumentEditDialog(doc, onSave) {
     event.preventDefault();
     if (saveButton.disabled) return;
 
-    const changes = {
-      kind: categoryInput.value,
-      docId: docIdInput.value.trim(),
-      docDateSic: docDateInput.value.trim(),
-      docSubject: docSubjectInput.value.trim(),
-    };
+    const changes = {};
+
+    if (categoryInput.value !== doc.classification?.kind) {
+      changes.kind = categoryInput.value;
+    }
+
+    if (docIdInput.value.trim() !== doc.classification?.docId?.value) {
+      changes.docId = docIdInput.value.trim();
+    }
+
+    if (docDateInput.value.trim() !== doc.classification?.docDateSic?.value) {
+      changes.docDateSic = docDateInput.value.trim();
+    }
+
+    if (docSubjectInput.value.trim() !== doc.classification?.docSubject?.value) {
+      changes.docSubject = docSubjectInput.value.trim();
+    }
 
     try {
       saveButton.disabled = true;

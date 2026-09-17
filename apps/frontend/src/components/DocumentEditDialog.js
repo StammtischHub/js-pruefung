@@ -5,7 +5,7 @@ export function renderDocumentEditDialog(doc, onSave) {
 
   dialog.innerHTML = `
     <form id="document-edit-form">
-      <h2 id="edit-heading">Metadaten bearbeiten</h2>
+      <h2 id="edit-heading">Dokument prüfen</h2>
 
       <label for="edit-category">
         Kategorie
@@ -41,7 +41,7 @@ export function renderDocumentEditDialog(doc, onSave) {
       </button>
 
       <button type="submit" id="save-document">
-        Speichern
+        Speichern und Prüfung abschließen
       </button>
     </form>
   `;
@@ -93,7 +93,7 @@ export function renderDocumentEditDialog(doc, onSave) {
     } catch (error) {
       console.error("Updating metadata failed:", error);
 
-      showToast("Metadaten konnten nicht gespeichert werden.", "error");
+      showToast(error.message || "Die Prüfung konnte nicht abgeschlossen werden.", "error");
     } finally {
       saveButton.disabled = false;
     }

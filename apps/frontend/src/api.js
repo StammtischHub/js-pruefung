@@ -45,8 +45,6 @@ export const api = {
 
   getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
 
-  getReviewDocuments: () => api.getDocuments("INBOX"),
-
   getDocumentPdfUrl: (id) => `${BASE_URL}/pdf/${encodeURIComponent(id)}`,
 
   updateDocument: (id, metadata) =>
@@ -54,6 +52,21 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(metadata),
     }),
+
+  reviewDocument: async (id, metadata) => {
+    await api.updateDocument(id, metadata);
+    const results = await request("/documents/finish", {
+      method: "PUT",
+      body: JSON.stringify({ documentIds: [id] }),
+    });
+    const result = Array.isArray(results) ? results.find((item) => item.id === id) : null;
+    if (!result || result.error || !(result.status >= 200 && result.status < 300)) {
+      throw new Error(
+        "Metadaten gespeichert, aber das Abschließen der Prüfung ist fehlgeschlagen. Bitte erneut versuchen."
+      );
+    }
+    return result.document;
+  },
 
   uploadDocument: (file) => {
     const body = new FormData();

@@ -4,7 +4,6 @@ import { renderTrashView } from "./views/TrashView.js";
 import { api } from "./api.js";
 import { initDocumentUpload } from "./components/DocumentUpload.js";
 import { renderProcessedView } from "./views/ProcessedView.js";
-import { renderReviewView } from "./views/ReviewView.js";
 
 const app = document.getElementById("app");
 let currentView = "inbox";
@@ -104,10 +103,6 @@ async function renderView(viewName) {
   switch (viewName) {
     case "inbox":
       await renderInboxView(app);
-      break;
-
-    case "review":
-      await renderReviewView(app);
       break;
 
     case "processed":

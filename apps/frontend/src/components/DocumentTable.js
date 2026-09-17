@@ -99,7 +99,12 @@ export function renderDocumentTable(container, documents, columns, options = {})
       const cell = document.createElement("td");
 
       if (column.render) {
-        cell.innerHTML = column.render(doc);
+        const content = column.render(doc);
+        if (content instanceof Node) {
+          cell.appendChild(content);
+        } else {
+          cell.innerHTML = content;
+        }
       } else {
         cell.textContent = column.value(doc);
       }
@@ -110,7 +115,8 @@ export function renderDocumentTable(container, documents, columns, options = {})
     if (onRowClick) {
       row.classList.add("clickable");
 
-      row.addEventListener("click", () => {
+      row.addEventListener("click", (event) => {
+        if (event.target.closest("a, button, input, select, textarea, details, object")) return;
         onRowClick(doc);
       });
     }

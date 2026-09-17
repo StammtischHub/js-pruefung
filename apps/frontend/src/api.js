@@ -45,6 +45,10 @@ export const api = {
 
   getDocuments: (state) => request(`/documents/?state=${encodeURIComponent(state)}`),
 
+  getReviewDocuments: () => api.getDocuments("INBOX"),
+
+  getDocumentPdfUrl: (id) => `${BASE_URL}/pdf/${encodeURIComponent(id)}`,
+
   updateDocument: (id, metadata) =>
     request(`/documents/${encodeURIComponent(id)}`, {
       method: "PUT",

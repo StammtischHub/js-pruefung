@@ -24,7 +24,7 @@ services:
       - scanner-mock
       - pdfclassifier-api-mock
     volumes:
-      - ./apps/bff/data:/app/data
+      - ./apps/bff/data:/app/apps/bff/data
     environment:
       NODE_ENV: production
       PORT: 4000

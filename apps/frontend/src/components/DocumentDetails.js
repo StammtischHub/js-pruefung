@@ -106,7 +106,7 @@ export function renderDocumentDetails(app, doc, onBack) {
             </button>
 
             <button type="button" id="edit-document">
-              Metadaten bearbeiten
+              Dokument prüfen
             </button>
           `
           : ""
@@ -185,11 +185,17 @@ export function renderDocumentDetails(app, doc, onBack) {
   if (editButton) {
     editButton.addEventListener("click", () => {
       renderDocumentEditDialog(doc, async (changes) => {
-        const updatedDocument = await api.updateDocument(doc.id, changes);
-
-        renderDocumentDetails(app, updatedDocument, onBack);
-
-        showToast("Metadaten erfolgreich gespeichert.");
+        await api.reviewDocument(doc.id, changes);
+        showToast("Prüfung abgeschlossen. Das Dokument ist unter Bearbeitet verfügbar.");
+        try {
+          await onBack();
+        } catch (error) {
+          console.error("Liste konnte nicht aktualisiert werden:", error);
+          showToast(
+            "Prüfung abgeschlossen, aber die Liste konnte nicht aktualisiert werden.",
+            "error"
+          );
+        }
       });
     });
   }

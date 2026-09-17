@@ -5,7 +5,7 @@ export function renderDocumentEditDialog(doc, onSave) {
 
   dialog.innerHTML = `
     <form id="document-edit-form">
-      <h2>Metadaten bearbeiten</h2>
+      <h2 id="edit-heading">Dokument prüfen</h2>
 
       <label for="edit-category">
         Kategorie
@@ -41,36 +41,41 @@ export function renderDocumentEditDialog(doc, onSave) {
       </button>
 
       <button type="submit" id="save-document">
-        Speichern
+        Speichern und Prüfung abschließen
       </button>
     </form>
   `;
 
   document.body.appendChild(dialog);
 
-  const form = document.getElementById("document-edit-form");
-  const categoryInput = document.getElementById("edit-category");
-  const docIdInput = document.getElementById("edit-doc-id");
-  const docDateInput = document.getElementById("edit-doc-date");
-  const docSubjectInput = document.getElementById("edit-doc-subject");
-  const cancelButton = document.getElementById("cancel-edit");
-  const saveButton = document.getElementById("save-document");
+  const form = dialog.querySelector("#document-edit-form");
+  const categoryInput = dialog.querySelector("#edit-category");
+  const docIdInput = dialog.querySelector("#edit-doc-id");
+  const docDateInput = dialog.querySelector("#edit-doc-date");
+  const docSubjectInput = dialog.querySelector("#edit-doc-subject");
+  const cancelButton = dialog.querySelector("#cancel-edit");
+  const saveButton = dialog.querySelector("#save-document");
 
-  categoryInput.value = doc.classification.kind;
-  docIdInput.value = doc.classification.docId.value;
-  docDateInput.value = doc.classification.docDateSic.value;
-  docSubjectInput.value = doc.classification.docSubject.value;
+  categoryInput.value = doc.classification?.kind ?? "UNKNOWN";
+  docIdInput.value = doc.classification?.docId?.value ?? "";
+  docDateInput.value = doc.classification?.docDateSic?.value ?? "";
+  docSubjectInput.value = doc.classification?.docSubject?.value ?? "";
 
   cancelButton.addEventListener("click", () => {
     dialog.close();
   });
 
+  const closeForExpiredSession = () => dialog.close();
+  window.addEventListener("session-expired", closeForExpiredSession);
+
   dialog.addEventListener("close", () => {
+    window.removeEventListener("session-expired", closeForExpiredSession);
     dialog.remove();
   });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (saveButton.disabled) return;
 
     const changes = {
       kind: categoryInput.value,
@@ -88,7 +93,7 @@ export function renderDocumentEditDialog(doc, onSave) {
     } catch (error) {
       console.error("Updating metadata failed:", error);
 
-      showToast("Metadaten konnten nicht gespeichert werden.", "error");
+      showToast(error.message || "Die Prüfung konnte nicht abgeschlossen werden.", "error");
     } finally {
       saveButton.disabled = false;
     }

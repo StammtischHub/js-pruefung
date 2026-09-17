@@ -1,11 +1,14 @@
 import { showToast } from "./Toast.js";
 
-export function renderDocumentEditDialog(doc, onSave) {
+export function renderDocumentEditDialog(doc, onSave, openNextByDefault = false) {
   const dialog = document.createElement("dialog");
+  const isInbox = doc.state === "INBOX";
 
   dialog.innerHTML = `
     <form id="document-edit-form">
-      <h2 id="edit-heading">Dokument prüfen</h2>
+      <h2 id="edit-heading">
+        ${isInbox ? "Dokument prüfen" : "Metadaten bearbeiten"}
+      </h2>
 
       <label for="edit-category">
         Kategorie
@@ -36,12 +39,23 @@ export function renderDocumentEditDialog(doc, onSave) {
 
       <input id="edit-doc-subject" type="text" required />
 
+      ${
+    isInbox
+      ? `
+            <label for="open-next-document">
+              <input id="open-next-document" type="checkbox" />
+              Nächstes Dokument öffnen
+            </label>
+          `
+      : ""
+  }
+
       <button type="button" id="cancel-edit">
         Abbrechen
       </button>
 
       <button type="submit" id="save-document">
-        Speichern und Prüfung abschließen
+        ${isInbox ? "Speichern und Prüfung abschließen" : "Speichern"}
       </button>
     </form>
   `;
@@ -53,23 +67,33 @@ export function renderDocumentEditDialog(doc, onSave) {
   const docIdInput = dialog.querySelector("#edit-doc-id");
   const docDateInput = dialog.querySelector("#edit-doc-date");
   const docSubjectInput = dialog.querySelector("#edit-doc-subject");
+  const nextDocumentCheckbox = dialog.querySelector("#open-next-document");
   const cancelButton = dialog.querySelector("#cancel-edit");
   const saveButton = dialog.querySelector("#save-document");
+  const mainNav = document.getElementById("main-nav");
 
   categoryInput.value = doc.classification?.kind ?? "UNKNOWN";
   docIdInput.value = doc.classification?.docId?.value ?? "";
   docDateInput.value = doc.classification?.docDateSic?.value ?? "";
   docSubjectInput.value = doc.classification?.docSubject?.value ?? "";
 
+  if (nextDocumentCheckbox) {
+    nextDocumentCheckbox.checked = openNextByDefault;
+  }
+
   cancelButton.addEventListener("click", () => {
     dialog.close();
   });
 
   const closeForExpiredSession = () => dialog.close();
+  const closeForNavigation = () => dialog.close();
+
   window.addEventListener("session-expired", closeForExpiredSession);
+  mainNav?.addEventListener("click", closeForNavigation);
 
   dialog.addEventListener("close", () => {
     window.removeEventListener("session-expired", closeForExpiredSession);
+    mainNav?.removeEventListener("click", closeForNavigation);
     dialog.remove();
   });
 
@@ -95,10 +119,12 @@ export function renderDocumentEditDialog(doc, onSave) {
       changes.docSubject = docSubjectInput.value.trim();
     }
 
+    const openNextDocument = nextDocumentCheckbox?.checked ?? false;
+
     try {
       saveButton.disabled = true;
 
-      await onSave(changes);
+      await onSave(changes, openNextDocument);
 
       dialog.close();
     } catch (error) {

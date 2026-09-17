@@ -115,6 +115,10 @@ export function renderDocumentDetails(app, doc, onBack) {
       ${
         isProcessed
           ? `
+            <button type="button" id="edit-document">
+              Metadaten bearbeiten
+            </button>
+
             <button type="button" id="move-to-inbox" class="button">
               In Inbox verschieben
             </button>

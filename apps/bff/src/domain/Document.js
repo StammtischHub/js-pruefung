@@ -38,13 +38,14 @@ export class Document {
     return document;
   }
 
-  static async forNewFile(file) {
+  static async forNewFile(file, uploader) {
     const id = uuid();
     const document = new Document({
       id: id,
       originalName: file.originalname,
       path: null,
       state: State.SCANNER,
+      editedBy: [uploader],
     });
     document.path = document.#getPathForState(State.SCANNER);
 
